@@ -1,0 +1,3 @@
+Node.js'i yeni öğreniyorum ve read dile ile öğrendiklerim bunlar. 
+ ‼️‼️✳️  😀😀  fs.readFile(), Node.js'de bir dosyayı okumanın en basit yolu , dosya yolunu, kodlamayı ve dosya verileriyle (ve hatayla) çağrılacak bir geri çağırma işlevini ileterek yöntemi kullanmaktır 😀😀 ‼️‼️✳️. 
+ Oluşturulma Tarihi: 1716637085176

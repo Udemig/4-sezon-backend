@@ -1,0 +1,1 @@
+‼️‼️✳️  😀😀  fs.readFile(), Node.js'de bir dosyayı okumanın en basit yolu , dosya yolunu, kodlamayı ve dosya verileriyle (ve hatayla) çağrılacak bir geri çağırma işlevini ileterek yöntemi kullanmaktır 😀😀 ‼️‼️✳️
