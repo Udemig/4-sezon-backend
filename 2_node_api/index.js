@@ -52,8 +52,14 @@ const server = http.createServer((req, res) => {
       return res.end(tempOverview);
 
     case "/product":
-      // TODO
-      return res.end(tempProduct);
+      // urldeki id'li ürünü dizide bul
+      const product = dataObj[query.id];
+
+      // detay sayfasının html'ini ürünün bilgilerine göre düzenle
+      const output = replaceTemplate(tempProduct, product);
+
+      // client'a html'i gönder
+      return res.end(output);
 
     default:
       return res.end("<h1>ARANAN SAYFA BULUNAMADI</h1>");
