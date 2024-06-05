@@ -5,7 +5,7 @@
       "title": "The Wolf of Wall Street",
       "year": "2013",
       "genre": ["Biography", "Comedy", "Crime"],
-      "rating": "8.2"
+      "rating": "9.4"
     },
     {
       "title": "The Avengers: Infinity war",
@@ -20,27 +20,6 @@
       "year": "2015",
       "genre": ["Action", "Adventure", "Fantasy"],
       "rating": "7.9"
-    },
-    {
-      "title": "Spiderman",
-      "year": "2023",
-      "genre": ["Action"],
-      "rating": "8.7",
-      "id": "16395da0-7a20-4ebd-94a5-886cfd99566b"
-    },
-    {
-      "title": "Spiderman",
-      "year": "2023",
-      "genre": ["Action"],
-      "rating": "8.7",
-      "id": "5de9a66b-e31e-4a1d-b4f9-3fc73b8847ed"
-    },
-    {
-      "title": "Spiderman",
-      "year": "2023",
-      "genre": ["Action"],
-      "rating": "8.7",
-      "id": "7c7a1674-1f0b-4998-9ed5-0ad6ada599f8"
     }
   ]
 }

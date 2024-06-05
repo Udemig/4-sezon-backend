@@ -5,8 +5,23 @@ const deleteRequest = require("./methods/delete");
 
 // 1) server oluştur
 const server = http.createServer((req, res) => {
+  console.log("😀😀 İSTEK GELDİ", req.method);
+
+  // frontende gönderilecek bütün cevaplara eklenicek ve cors hatasını engelliyecek header
+  res.setHeader("Access-Control-Allow-Origin", "*");
+
   // istek atılan method türünü göre client'a cevap vericek fonksiyonu belirledik. fonksiyonları module yapısı sayesinde kod kalabılığı olmaması için ayrı dosyalarda tanımladık.
   switch (req.method) {
+    // frontend'den bir post/put/patch/delete isteği atılığı zaman tarayıcı öncelikle server'ın bu istek tiplerini kabul ettiğini kontrol etmek amacıyla options methoduyla istek atıyor. Eğer options isteği gelince cevap göndermezssek diğer isteği hiç atmıyor ama option gelince doğru header'lar ile cevap verirsek options'ın ardından asıl isteği gönderiyor
+
+    case "OPTIONS":
+      res.setHeader(
+        "Access-Control-Allow-Methods",
+        "GET, POST, DELETE, PUT, PATCH, OPTIONS"
+      );
+      res.end();
+      break;
+
     case "GET":
       getRequest(req, res);
       break;
