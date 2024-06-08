@@ -7,12 +7,14 @@ import Header from "./components/Header";
 const App = () => {
   return (
     <BrowserRouter>
-      <Header />
-      <Routes>
-        <Route path="/" element={<Main />} />
-        <Route path="/movie/:id" element={<Detail />} />
-        <Route path="/create" element={<Create />} />
-      </Routes>
+      <div className="flex flex-col min-h-screen">
+        <Header />
+        <Routes>
+          <Route path="/" element={<Main />} />
+          <Route path="/movie/:id" element={<Detail />} />
+          <Route path="/create" element={<Create />} />
+        </Routes>
+      </div>
     </BrowserRouter>
   );
 };

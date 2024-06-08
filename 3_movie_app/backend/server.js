@@ -19,6 +19,8 @@ const server = http.createServer((req, res) => {
         "Access-Control-Allow-Methods",
         "GET, POST, DELETE, PUT, PATCH, OPTIONS"
       );
+      res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+
       res.end();
       break;
 
