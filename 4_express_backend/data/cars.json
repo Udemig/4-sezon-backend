@@ -1,0 +1,62 @@
+[
+  {
+    "id": "1",
+    "marka": "Toyota",
+    "model": "Corolla",
+    "yıl": 2018,
+    "renk": "Beyaz",
+    "fiyat": 15000,
+    "kilometre": 45000,
+    "yakıt_türü": "Benzin",
+    "vites": "Otomatik",
+    "durum": "Kullanılmış"
+  },
+  {
+    "id": "2",
+    "marka": "Honda",
+    "model": "Civic",
+    "yıl": 2023,
+    "renk": "Kırmızı",
+    "fiyat": 24000,
+    "kilometre": 30000,
+    "yakıt_türü": "Benzin",
+    "vites": "Otomatik",
+    "durum": "Kullanılmış"
+  },
+  {
+    "id": "4",
+    "marka": "Mercedes-Benz",
+    "model": "E-Class",
+    "yıl": 2019,
+    "renk": "Mavi",
+    "fiyat": 35000,
+    "kilometre": 30000,
+    "yakıt_türü": "Benzin",
+    "vites": "Otomatik",
+    "durum": "Kullanılmış"
+  },
+  {
+    "id": "5",
+    "marka": "Audi",
+    "model": "A4",
+    "yıl": 2023,
+    "renk": "Kırmızı",
+    "fiyat": 45000,
+    "kilometre": 0,
+    "yakıt_türü": "Benzin",
+    "vites": "Manuel",
+    "durum": "Yeni"
+  },
+  {
+    "marka": "Mitsbushi",
+    "model": "Lancer Evo",
+    "yıl": 2004,
+    "renk": "Beyaz",
+    "fiyat": 15000,
+    "kilometre": 45000,
+    "yakıt_türü": "Benzin",
+    "vites": "Otomatik",
+    "durum": "Kullanılmış",
+    "id": "dc05dd65-10ea-4072-ba6c-5c4e21f08bb3"
+  }
+]
