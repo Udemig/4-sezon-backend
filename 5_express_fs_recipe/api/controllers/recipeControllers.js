@@ -1,4 +1,6 @@
 const getData = require("../utils/getData");
+const crypto = require("crypto");
+const setData = require("../utils/setData");
 
 const data = getData();
 
@@ -32,20 +34,59 @@ exports.getAllRecipes = (req, res) => {
   });
 };
 
-exports.getRecipe = (req, res) => {
+exports.createRecipe = (req, res) => {
+  // 1) isteğin body bölümünde gelen veriye eriş
+  const newRecipe = req.body;
+
+  // 2) verinin bütün değerleri tanımlanmışmı kontrol et
+  if (
+    !newRecipe.recipeName ||
+    !newRecipe.recipeTime ||
+    !newRecipe.category ||
+    !newRecipe.ingredients ||
+    !newRecipe.instructions ||
+    !newRecipe.image
+  ) {
+    return res
+      .status(400)
+      .json({ message: "Lütfen bütün değerler tanımlayın" });
+  }
+
+  // 3) veriye id ekle
+  newRecipe.id = crypto.randomUUID();
+
+  // 4) tarif verisini diziye ekle
+  data.push(newRecipe);
+
+  // 5) güncel diziyi json dosyasına aktar
+  setData(data);
+
+  // 6) cevap gönder
   res.status(200).json({
-    message: "Bir Tarif Alındı",
+    message: "Yeni Tarif oluşturuldu",
+    newRecipe,
+  });
+};
+
+exports.getRecipe = (req, res) => {
+  // dizide param ile gelen id'li tarifi ara
+  const found = data.find((i) => i.id === req.params.id);
+
+  // tarif bulunamazsa hata gönder
+  if (!found)
+    return res
+      .status(404)
+      .json({ message: "Aradığınız id'li eleman bulunamadu" });
+
+  // cevab gönder
+  res.status(200).json({
+    message: "Aranan tarif bulundu",
+    recipe: found,
   });
 };
 
 exports.deleteRecipe = (req, res) => {
   res.status(200).json({
     message: "Bir tarif silindi",
-  });
-};
-
-exports.createRecipe = (req, res) => {
-  res.status(200).json({
-    message: "Yeni Tarif oluşturuldu",
   });
 };
