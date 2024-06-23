@@ -10,9 +10,13 @@ const {
 const router = express.Router();
 
 // oluşturudğumuz router'ın endpoint/route/yol 'larını ve istek gelince çalışıcak fonksyionları belirle
-router.route("/api/recipes").get(getAllRecipes).post(createRecipe);
+router.route("/api/recipes")
+.get(getAllRecipes)
+.post(createRecipe);
 
-router.route("/api/recipes/:id").get(getRecipe).delete(deleteRecipe);
+router.route("/api/recipes/:id")
+.get(getRecipe)
+.delete(deleteRecipe);
 
 // serverde kullanmak için routerı export et
 module.exports = router;

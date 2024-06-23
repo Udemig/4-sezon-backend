@@ -117,7 +117,7 @@ const Create = () => {
         <Layout label="Sunum Önerisi">
           <textarea
             className="rounded-md p-2 focus:outline-red-400"
-            name="servingSuggestions"
+            name="servingSuggestion"
             required
           />
         </Layout>

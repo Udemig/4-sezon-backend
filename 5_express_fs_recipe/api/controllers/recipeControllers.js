@@ -86,7 +86,17 @@ exports.getRecipe = (req, res) => {
 };
 
 exports.deleteRecipe = (req, res) => {
-  res.status(200).json({
+  // silincek elemanın sırasını bul
+  const index = data.findIndex((i) => i.id === req.params.id);
+
+  // elemanı diziden kaldır
+  data.splice(index, 1);
+
+  // json dosyasını gücellee
+  setData(data);
+
+  // cevap gönder
+  res.status(204).json({
     message: "Bir tarif silindi",
   });
 };
