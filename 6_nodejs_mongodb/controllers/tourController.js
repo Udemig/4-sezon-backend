@@ -1,39 +1,133 @@
 // API'a gelen tur ile alakalı http isteklerine cevap gönderen bütün fonksiyonlar bu dosyada yer alıcak
 const Tour = require("../models/tourModel");
+const APIFeatures = require("../utils/apiFeatures");
+
+// zorluğa göre istatistikleri hesapla
+exports.getTourStats = async (req, res) => {
+  try {
+    // Aggregation Pipeline
+    // Raporlama Adımları
+    const stats = await Tour.aggregate([
+      // 1.Adım ) ratingi 4 ve üzeri olan turları al
+      {
+        $match: { ratingsAverage: { $gte: 4.0 } },
+      },
+      // 2.Adım ) zorluklarına göre gruplandır ve ortalam değerlerini hesapla
+      {
+        $group: {
+          _id: "$difficulty",
+          count: { $sum: 1 },
+          avgRating: { $avg: "$ratingsAverage" },
+          avgPrice: { $avg: "$price" },
+          minPrice: { $min: "$price" },
+          maxPrice: { $max: "$price" },
+        },
+      },
+      // 3.Adım ) gruplanan veriyi fiyata göre artan sırala
+      { $sort: { avgPrice: 1 } },
+      // 4.Adım ) fiyatı 400den küçük olan zorlukları kaldır
+      { $match: { avgPrice: { $gte: 500 } } },
+    ]);
+
+    res.status(200).json({
+      message: "Rapor oluşturuldu",
+      stats,
+    });
+  } catch (err) {
+    console.log(err);
+
+    res.status(500).json({
+      message: "Sorun oluştu",
+      error: err.message,
+    });
+  }
+};
+
+// yıla göre istastikleri hesapla
+exports.getMonthlyPlan = async (req, res) => {
+  // parametre olarak gelen yılı al
+  const year = Number(req.params.year);
+
+  try {
+    // raporlama adımları
+    const stats = await Tour.aggregate([
+      {
+        $unwind: {
+          path: "$startDates",
+        },
+      },
+      {
+        $match: {
+          startDates: {
+            $gte: new Date(`${year}-01-01`),
+            $lte: new Date(`${year}-12-31`),
+          },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            $month: "$startDates",
+          },
+          count: {
+            $sum: 1,
+          },
+          tours: {
+            $push: "$name",
+          },
+        },
+      },
+      {
+        $addFields: {
+          month: "$_id",
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+        },
+      },
+      {
+        $sort: {
+          month: 1,
+        },
+      },
+    ]);
+
+    res.status(200).json({
+      message: `${year} yılı için aylık plan oluşturuldu`,
+      stats,
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+// günün fırsatları için gerekli filtremeleri ayarlar
+exports.aliasTopTours = async (req, res, next) => {
+  req.query.sort = "-ratingsAverage,-ratingsQuantity";
+  req.query.fields = "name,price,ratingsAverage,summary,difficulty";
+  req.query["price[lte]"] = 1200;
+  req.query.limit = 5;
+
+  next();
+};
 
 // bütün turları alır
 exports.getAllTours = async (req, res) => {
   try {
-    // 1) turlar için sorgu oluştur (filtreleme ile)
-    const tourQuery = Tour.find(req.formattedQuery);
+    // 1) API Features class'ından örnek al (geriye sorguyu oluşturup döndürür)
+    const features = new APIFeatures(Tour.find(), req.query, req.formattedQuery)
+      .filter()
+      .sort()
+      .limit()
+      .pagination();
 
-    // 2) eğer sort parametresi varsa ona göre sırala yoksa en yeniyi en başa koy
-    if (req.query.sort) {
-      // mongodb sırlanıcak fieldların arasına "," değil " " istediği için güncelledik
-      tourQuery.sort(req.query.sort.split(",").join(" "));
-    } else {
-      tourQuery.sort("-createdAt");
-    }
-
-    // 3) eğer fields parametresi varsa alan limitle
-    if (req.query.fields) {
-      const fields = req.query.fields.split(",").join(" ");
-      tourQuery.select(fields);
-    }
-
-    // 4) pagination | sayfalama
-    const page = Number(req.query.page) || 1; // mevcut sayfa sayısı
-    const limit = Number(req.query.limit) || 10; // sayfa başına eleman sayısı
-    const skip = (page - 1) * limit; // limit çalışmadan önce atlanıcak eleman sayısı
-
-    tourQuery.skip(skip).limit(limit);
-
-    // 5) sorguyu çalıştır
-    const tours = await tourQuery;
+    // 2) sorguyu çalıştır
+    const tours = await features.query;
 
     res.status(200).json({
       message: "Bütün turlar alındı",
-      page,
       results: tours.length,
       tours,
     });

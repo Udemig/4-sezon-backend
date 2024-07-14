@@ -23,8 +23,24 @@
 
 # Operatörler
 
-- gt  (>): greather than
+- gt (>): greather than
 - gte (>=): greather than or equals
-- lt  (<): less than
+- lt (<): less than
 - lte (<=): less than or equals
-- ne  (!=): not equals
+- ne (!=): not equals
+
+# Authentication (Kimlik Doğrulama)
+
+- Bir kullanıcnın kimliğini doğrulama sürecidir.
+- Örn: eposta - şifre | google hesabı | parmak izi
+- Kimlik doğrulama bir kullanıcının sisteme erişim talebini gerçekleştiren ilk adımdır.
+
+# Authorization (Yetkilendirme)
+
+- Bir kullancının sistemin belirli kaynaklarına erişimini kontrol etme sürecidir.
+- Yetkilendirme kimlik doğrulama sürecinden sonra yaptığımız işlemdir.
+- Kimliğini doğruladığımız kullanıcnın hangi eylemleri yapıp yapamayacığını belirleriz
+- Örn
+- - user role: sadece okuma yapabilir
+- - guide / lead-guide: sadece kendi oluşturdukları turlarda CRUD işlemi yapabilir
+- - admin role: hem bütün turlarda hemde kullancıı hespalarında CRUD işlemi yapabilir ve adminlere özel rapor route'larına erişebilir.

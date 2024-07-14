@@ -1,5 +1,6 @@
 const express = require("express");
 const tourRouter = require("./routes/tourRoutes");
+const userRouter = require("./routes/userRoute");
 const morgan = require("morgan");
 const app = express();
 
@@ -10,6 +11,8 @@ app.use(morgan("dev"));
 app.use(express.json());
 
 // turlar ile alakalı yolları projey tanıt
-app.use(tourRouter);
+app.use("/api/tours", tourRouter);
+app.use("/api/users", userRouter);
+app.use("/api/auth")
 
 module.exports = app;
