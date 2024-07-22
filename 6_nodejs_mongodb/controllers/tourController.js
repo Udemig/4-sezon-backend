@@ -1,9 +1,10 @@
 // API'a gelen tur ile alakalı http isteklerine cevap gönderen bütün fonksiyonlar bu dosyada yer alıcak
 const Tour = require("../models/tourModel");
 const APIFeatures = require("../utils/apiFeatures");
+const Err = require("../utils/appError");
 
 // zorluğa göre istatistikleri hesapla
-exports.getTourStats = async (req, res) => {
+exports.getTourStats = async (req, res, next) => {
   try {
     // Aggregation Pipeline
     // Raporlama Adımları
@@ -34,17 +35,12 @@ exports.getTourStats = async (req, res) => {
       stats,
     });
   } catch (err) {
-    console.log(err);
-
-    res.status(500).json({
-      message: "Sorun oluştu",
-      error: err.message,
-    });
+    next(new Err(500, err.message));
   }
 };
 
 // yıla göre istastikleri hesapla
-exports.getMonthlyPlan = async (req, res) => {
+exports.getMonthlyPlan = async (req, res, next) => {
   // parametre olarak gelen yılı al
   const year = Number(req.params.year);
 
@@ -98,8 +94,8 @@ exports.getMonthlyPlan = async (req, res) => {
       message: `${year} yılı için aylık plan oluşturuldu`,
       stats,
     });
-  } catch (error) {
-    console.log(error);
+  } catch (err) {
+    next(new Err(500, err.message));
   }
 };
 
@@ -114,7 +110,7 @@ exports.aliasTopTours = async (req, res, next) => {
 };
 
 // bütün turları alır
-exports.getAllTours = async (req, res) => {
+exports.getAllTours = async (req, res, next) => {
   try {
     // 1) API Features class'ından örnek al (geriye sorguyu oluşturup döndürür)
     const features = new APIFeatures(Tour.find(), req.query, req.formattedQuery)
@@ -131,52 +127,52 @@ exports.getAllTours = async (req, res) => {
       results: tours.length,
       tours,
     });
-  } catch (error) {
-    res.status(400).json({ message: "Bir hata oluştu", error: error.message });
+  } catch (err) {
+    next(new Err(500, err.message));
   }
 };
 
 // yeni bir tur oluşturur
-exports.createTour = async (req, res) => {
+exports.createTour = async (req, res, next) => {
   try {
     const newTour = await Tour.create(req.body);
 
     res.status(201).json({ message: "Yeni Tur Oluşturuldu", tour: newTour });
-  } catch (error) {
-    res.status(400).json({ message: "Bir hata oluştu", error: error.message });
+  } catch (err) {
+    next(new Err(500, err.message));
   }
 };
 
 // id'sine göre bir tur alır
-exports.getTour = async (req, res) => {
+exports.getTour = async (req, res, next) => {
   try {
     const tour = await Tour.findById(req.params.id);
 
     res.status(200).json({ message: "1 Tur Alındı", tour });
-  } catch (error) {
-    res.status(400).json({ message: "Bir hata oluştu", error: error.message });
+  } catch (err) {
+    next(new Err(500, err.message));
   }
 };
 
 // id'sine göre bir turu günceller
-exports.updateTour = async (req, res) => {
+exports.updateTour = async (req, res, next) => {
   try {
     const updatedTour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
       new: true, // güncelenmiş dökümanı döndürür
     });
 
     res.status(200).json({ message: "Tur Güncellendi", tour: updatedTour });
-  } catch (error) {
-    res.status(400).json({ message: "Bir hata oluştu", error: error.message });
+  } catch (err) {
+    next(new Err(500, err.message));
   }
 };
 
 // id'sine göre bir turu siler
-exports.deleteTour = async (req, res) => {
+exports.deleteTour = async (req, res, next) => {
   try {
     await Tour.findByIdAndDelete(req.params.id);
     res.status(204).json({ message: "Tur Silindi" });
-  } catch (error) {
-    res.status(400).json({ message: "Bir hata oluştu", error: error.message });
+  } catch (err) {
+    next(new Err(500, err.message));
   }
 };

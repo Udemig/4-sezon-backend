@@ -4,16 +4,17 @@ const authContoller = require("../controllers/authContoller");
 
 const router = express.Router();
 
-router.route("/signup").post(authContoller.signUp);
+router.post("/signup", authContoller.signUp);
 
-router.route("/login").post(authContoller.login);
+router.post("/login", authContoller.login);
 
-router.route("/logout").post(authContoller.logout);
+router.post("/logout", authContoller.logout);
 
-router
-  .route("/")
-  .get(userController.getAllUsers)
-  .post(userController.createUser);
+router.post("/forgot-password", authContoller.forgotPassword);
+
+router.post("/reset-password/:token", authContoller.resetPassword);
+
+router.route("/").get(userController.getAllUsers).post(userController.createUser);
 
 router
   .route("/:id")
