@@ -1,6 +1,6 @@
 const nodemailer = require("nodemailer");
 
-const sendMail = async () => {
+const sendMail = async (options) => {
   // 1) Transporter - Taşıyıcı Oluştur
   const transporter = nodemailer.createTransport({
     host: "sandbox.smtp.mailtrap.io",
@@ -14,9 +14,10 @@ const sendMail = async () => {
   // 2) Email'in içeriğini tanımla
   const mailOptions = {
     from: "Furkan Evin <furkanevin00@gmail.com>",
-    to: "mahmut@gmail.com",
-    subject: "Şifre Sıfırlama Epostası",
-    text: "Merhaba bu bağlanıtyı kullanarak şifrenizi .....",
+    to: options.email,
+    subject: options.subject,
+    text: options.text,
+    html: options.html,
   };
 
   // 3) Email'i gönder

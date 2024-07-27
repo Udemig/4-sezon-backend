@@ -63,7 +63,7 @@ const userSchema = new Schema({
 // *  passwordConfirm alanını kaldır
 userSchema.pre("save", async function (next) {
   // daha önce parola hashlendiyse aşağıdaki adımları atla
-  if (!this.isModified("password") || this.isNew) return next();
+  if (!this.isModified("password")) return next();
 
   // şifreyi hashle ve saltla
   this.password = await bcrypt.hash(this.password, 12);
@@ -72,7 +72,20 @@ userSchema.pre("save", async function (next) {
   this.passwordConfirm = undefined;
 });
 
-// 2) Sadece model üzerinden erişlebilen fonksiyon:
+// 2) Veritabanına kullanıcıyı kaydederken:
+// * eğer şifresini değiştirdiyse passChangedAt değeri ekle
+userSchema.pre("save", function (next) {
+  // eğer şifre değişmediyse veya döküman yeni oluşturuluyorsa fonksiyonu durdur
+  if (!this.isModified("password") || this.isNew) return next();
+
+  // şifre değişişm tarihi belirle
+  // şifre değişiminden hemen sonra jwt tokeni oluşturuduğumuz oluşturuluma tarihi çakışmasın diye 1 saniye çıkardık
+  this.passChangedAt = Date.now() - 1000;
+
+  next();
+});
+
+// 3) Sadece model üzerinden erişlebilen fonksiyon:
 // * normal şifre ile hashlenmiş şifreyi karşılaştırır
 userSchema.methods.correctPass = async function (candidatePass, userPass) {
   // ADAY ŞİFRE > Denem@123
@@ -80,10 +93,10 @@ userSchema.methods.correctPass = async function (candidatePass, userPass) {
   return await bcrypt.compare(candidatePass, userPass);
 };
 
-// 3) şifre sıfırlama tokeni oluşturan fonksiyon:
+// 4) şifre sıfırlama tokeni oluşturan fonksiyon:
 // * bu token daha sonra kullancının maline gönderilicek ve kullanıcı şifreisni sıfırlarken kimliğini doğrulama amaçlı bu tokeni kullanıcaz
 // * 10 dakikalik bir geçerlilik süresi olucak
-userSchema.methods.createResetToken = async function () {
+userSchema.methods.createResetToken = function () {
   // 1) 32 byte'lık rastgele bir veri oluşturur ve bunu hexadecimal bir diziye dönüştürür
   const resetToken = crypto.randomBytes(32).toString("hex");
 

@@ -12,7 +12,16 @@ router.post("/logout", authContoller.logout);
 
 router.post("/forgot-password", authContoller.forgotPassword);
 
-router.post("/reset-password/:token", authContoller.resetPassword);
+router.patch("/reset-password/:token", authContoller.resetPassword);
+
+// bu kod satırının devamındaki bütün endpointlerde protect mw çalışsın
+router.use(authContoller.protect);
+
+router.patch("/update-password", authContoller.updatePassword);
+
+router.patch("/update-me", userController.updateMe);
+
+router.delete("/delete-me", userController.deleteMe);
 
 router.route("/").get(userController.getAllUsers).post(userController.createUser);
 
