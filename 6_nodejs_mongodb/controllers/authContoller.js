@@ -17,6 +17,13 @@ const createSendToken = (user, code, res) => {
   // token oluştur
   const token = signToken(user._id);
 
+  // tokeni sadece http üzeirnden sseyahat eden çerezler ile gönder
+  res.cookie("jwt", token, {
+    expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
+    httpOnly: true,
+    // secure:true
+  });
+
   // şifreyi clienta giden cevaptan kaldır
   user.password = undefined;
 
@@ -24,7 +31,6 @@ const createSendToken = (user, code, res) => {
   res.status(code).json({
     message: "oturum açıldı",
     user,
-    token,
   });
 };
 
@@ -45,6 +51,9 @@ exports.signUp = c(async (req, res, next) => {
 exports.login = c(async (req, res, next) => {
   const { email, password } = req.body;
 
+  console.log(req.body);
+  return;
+
   // 1) email ve şifre geldi mi kontrol et
   if (!email || !password) {
     return next(new Err(400, "Lütfen mail ve şifrenizi giriniz"));
@@ -55,7 +64,9 @@ exports.login = c(async (req, res, next) => {
 
   // 2.1) kayıtlı kullanıcı yoksa hata fırlat
   if (!user) {
-    return next(new Err(404, "Girdiğiniz mail adresinde kayıtlı kullanıcı yoktur"));
+    return next(
+      new Err(404, "Girdiğiniz mail adresinde kayıtlı kullanıcı yoktur")
+    );
   }
 
   // 3) client'tan gelen şifre veritbanındaki hashlenmiş şifre ile eşleşiyor mu kontrol et
@@ -87,7 +98,9 @@ exports.protect = c(async (req, res, next) => {
 
   // token tanımsız ise hata fırlat
   if (!token) {
-    return next(new Err(403, "Bu işlem için yetkiniz yoktur.(jwt gönderilmedi)"));
+    return next(
+      new Err(403, "Bu işlem için yetkiniz yoktur.(jwt gönderilmedi)")
+    );
   }
 
   // 2) Tokenin geçerliliğini kontrol et (zaman aşımına uğramışmı /imza doğrumu)
@@ -97,7 +110,9 @@ exports.protect = c(async (req, res, next) => {
     decoded = jwt.verify(token, process.env.JWT_SECRET);
   } catch (error) {
     if (error.message === "jwt expired") {
-      return next(new Err(403, "Oturmunuz süresi doldu. (Tekrar giriş yapın)"));
+      return next(
+        new Err(403, "Oturmunuz süresi doldu. (Tekrar giriş yapın)")
+      );
     }
 
     return next(new Err(403, "Gönderilen token geçersiz."));
@@ -116,7 +131,10 @@ exports.protect = c(async (req, res, next) => {
 
     if (changeTime > decoded.iat)
       return next(
-        new Err(403, "Yakın zamanda şifre değiştirdiniz. Lütfen tekrar giriş yapın")
+        new Err(
+          403,
+          "Yakın zamanda şifre değiştirdiniz. Lütfen tekrar giriş yapın"
+        )
       );
   }
 
@@ -131,7 +149,9 @@ exports.restrictTo =
   (req, res, next) => {
     // 1) kulllancının rolü geçerli roller arasında yoksa erişimini engelle
     if (!roles.includes(req.user.role)) {
-      return next(new Err(401, "Bu işlemi yapmak için yetkiniz yok (rol yetersiz)"));
+      return next(
+        new Err(401, "Bu işlemi yapmak için yetkiniz yok (rol yetersiz)")
+      );
     }
 
     // 2) kullanıcının rolü geçerli ise erişime izin ver
@@ -148,7 +168,9 @@ exports.forgotPassword = c(async (req, res, next) => {
 
   //1.2) kullanıyı yoksa hata gönder
   if (!user) {
-    return next(new Err(404, "Bu mail adresinde bir kullanıcı bulunamadı"));
+    return next(
+      new Err(404, "Bu mail adresinde bir kullanıcı bulunamadı")
+    );
   }
 
   //2) şifre sıfırlama tokeni oluştur
@@ -158,7 +180,7 @@ exports.forgotPassword = c(async (req, res, next) => {
   await user.save({ validateBeforeSave: false });
 
   //4) kullanıcının maline tokeni link olarak gönder
-  const url = `http://127.0.0.1:4000/api/users/reset-password/${resetToken}`;
+  const url = `${req.protocol}://${req.headers.host}/api/users/reset-password/${resetToken}`;
 
   await sendMail({
     email: user.email,
@@ -183,7 +205,10 @@ exports.resetPassword = c(async (req, res, next) => {
     const token = req.params.token;
 
     //2) elimizde normal token olduğu ve veritbanında hashlenmiş hali saklandığı için bunları karşılaştırabilmek adına parametreyle gelen tokeni hashleyip veritbanındakiyle aynı mı kontrolü yap
-    const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+    const hashedToken = crypto
+      .createHash("sha256")
+      .update(token)
+      .digest("hex");
 
     //3) hashlenmiş tokene sahip kullanıcıyı al
     //3.1) son geçerlilik tarihi henüz dolmamış olmasını kontrol et

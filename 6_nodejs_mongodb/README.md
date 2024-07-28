@@ -87,3 +87,107 @@
 * Signature:
 * - Header ve payload'ın doğruluğunu ve bütünlüğünü sağlama kiçin kullanılır.
 * - İmza header ve payload'ın birleştirilmesiyle oluşan string'in bir algoritma ve bir gizli anahtar kullanılarak şifrelenmesiyle elde edilir.
+
+---
+
+# Saldırı Türleri
+
+## Kompromize Saldırı
+
+- Güçlü bir şekilde hashleme ve salt
+- Güçlü bir şekilde şifrelenmiş şifre sıfırlama tokenleri
+- Kullanıcıların güçlü şifreler yazmasını sağlama
+
+## Brute Force Saldırıları
+
+- Kullanıcıların güçlü şifreler yazmasını sağlama
+- İstek Hızını Sınırlandırma
+- Captcha Kullanımı
+- Parola deneme sınırı ekle
+
+## Cross Site Scripting (XSS)
+
+- JWT tokeninin sadece HTTPS üzerinden seyahat etmesi ve çerezler aracılığı ile gönderilmesi
+- Özel HTTP header'ları ekle
+
+## Hizmet Engelleme (DoS)
+
+- Rate limit uygula (bir IP adresinden belirli süre içerisinde gelen isteği sınırla)
+
+## Kod Enjeksiyonu
+
+- Mongoose kullan
+- Kullanıcı girdilerinin tamamını kısıtla (URL'deki parametreler ve inputtan alınan veriler)
+
+## Genel Önlemler
+
+- Her zaman HTTPS kullanılmalı
+- Tokenlerin geçerlilik süresi belirlenmeli
+- Hataları detaylı şekilde frontend'e gönderme
+- Siteler arası saldırıları önlemek için CSRF tokenleri kullan
+- Önemli işlemlerin öncesinde doğrulama iste
+- Bazı JWT tokenleri için kara liste oluşturulabilir
+- Hesap oluşturmadan önce e-posta adresini doğrula
+- Çift faktörlü doğrulama (2FA) kullanımı
+
+# Güvenlik Kütüphaneleri
+
+- `express-rate-limit`: aynı ip adresinden gelene istekleri sınırla
+- `helmet`: güvenlik headerları ekle
+- `express-mongo-sanitize`: body/param/query/header ile enjekte edilmeye çalılılan kodları bozar
+- `json(limit)`: body bölümünden gelebilcek max veri boyutunu belirledik
+- `hpp`: parametre kirliliğini önler.
+
+# Data Modeling
+
+Data modeling, veri yapılarının, kısıtlamalarını, ilişkilerini ve diğer unusrları tanımladığımız sürece verilen isimdir. Bu süreç projenin ihityaçlarını karşılama adına veritabnın tasarımını planlamak için kullanılır. Amaç, karmaşık veri setlerinin daha anlaşılabilir, düzenli, erişilebilir bir şekilde organize edilmesini sağlama.
+
+## Veri Modelleme Süreci
+
+1. Gereksinimleri Belirle
+
+2. Mantıksal Belirleme
+
+3. Fiziksel Veri Modeli
+
+## Veriler Arasında Kurulan İlişkiler
+
+1. Refferencing (Refereans) / Normalization:
+
+- Referans, belirli belgelerdeki veriler bir başka belgeye referanslar (id) kullanrak ilişkilendirmeye yarar. Yani iki belge arasında ilişki vardır ancak geçerk veri bir belegede saklanırken diğeri belgede sadece gerçek verinin referansı bulunur
+
+2. Embedding (Gömme) / Denormalization:
+
+- belirli blegenin içerisindeki verileri diğer belegelere doğradana gömülü olarak tanımlamay yarar
+
+---
+
+`user document` = {
+id:455,
+name:"ahmet",
+surname:"yıldız",
+phone: 35234645650498
+}
+
+## Referans İle Yorum Dökümanı Oluşturulum
+
+`comment document` = {
+id:46534,
+text:"Bu video çok iyiydi",
+createdAt:24.10.2019,
+user:455 > sadece id
+}
+
+## Embedding İle Yorum Dökümanı Oluşturulum
+
+`comment document` = {
+id:46534,
+text:"Bu video çok iyiydi",
+createdAt:24.10.2019,
+user:{
+  id:455,
+  name:"ahmet",
+  surname:"yıldız",
+  phone: 35234645650498
+}
+}

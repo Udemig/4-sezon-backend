@@ -13,7 +13,10 @@ const userSchema = new Schema({
   email: {
     type: String,
     required: [true, "Kullanıcı email değerine sahip olmalıdır"],
-    unique: [true, "Bu eposta adresine ait kayıtlı bir hesap bulunmaktadır"],
+    unique: [
+      true,
+      "Bu eposta adresine ait kayıtlı bir hesap bulunmaktadır",
+    ],
     validate: [validator.isEmail, "Lütfen geçerli bir email giriniz"],
   },
 
@@ -26,7 +29,10 @@ const userSchema = new Schema({
     type: String, //
     required: [true, "Kullanıcı şifre değerine sahip olmalıdır"],
     minLength: [8, "Şifre en az 8 karakter içermeli"],
-    validate: [validator.isStrongPassword, "Şifreniz yeterince güçlü değil"],
+    validate: [
+      validator.isStrongPassword,
+      "Şifreniz yeterince güçlü değil",
+    ],
   },
 
   passwordConfirm: {
@@ -85,7 +91,16 @@ userSchema.pre("save", function (next) {
   next();
 });
 
-// 3) Sadece model üzerinden erişlebilen fonksiyon:
+// 3) Kullanıcı veritabanından alınmaya çalışıldığında:
+// * eğer hesap inaktif ise erişimi engelle
+userSchema.pre(/^find/, function (next) {
+  // bir sonraki yapılacak sorgu için active olmayan elemanları kaldır
+  this.find({ active: { $ne: false } });
+
+  next();
+});
+
+// 4) Sadece model üzerinden erişlebilen fonksiyon:
 // * normal şifre ile hashlenmiş şifreyi karşılaştırır
 userSchema.methods.correctPass = async function (candidatePass, userPass) {
   // ADAY ŞİFRE > Denem@123
@@ -93,7 +108,7 @@ userSchema.methods.correctPass = async function (candidatePass, userPass) {
   return await bcrypt.compare(candidatePass, userPass);
 };
 
-// 4) şifre sıfırlama tokeni oluşturan fonksiyon:
+// 5) şifre sıfırlama tokeni oluşturan fonksiyon:
 // * bu token daha sonra kullancının maline gönderilicek ve kullanıcı şifreisni sıfırlarken kimliğini doğrulama amaçlı bu tokeni kullanıcaz
 // * 10 dakikalik bir geçerlilik süresi olucak
 userSchema.methods.createResetToken = function () {
@@ -101,7 +116,10 @@ userSchema.methods.createResetToken = function () {
   const resetToken = crypto.randomBytes(32).toString("hex");
 
   // 2) tokeni hashle ve veritabanına kaydet
-  this.passResetToken = crypto.createHash("sha256").update(resetToken).digest("hex");
+  this.passResetToken = crypto
+    .createHash("sha256")
+    .update(resetToken)
+    .digest("hex");
 
   // 3) tokenin son geçerlilik tarihini kullanıcı dökümanına ekle
   this.passResetExpires = Date.now() + 10 * 60 * 1000;

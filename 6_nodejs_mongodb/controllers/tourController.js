@@ -104,8 +104,14 @@ exports.aliasTopTours = (req, res, next) => {
 
 // bütün turları alır
 exports.getAllTours = c(async (req, res, next) => {
+  console.log(req.query);
+
   // 1) API Features class'ından örnek al (geriye sorguyu oluşturup döndürür)
-  const features = new APIFeatures(Tour.find(), req.query, req.formattedQuery)
+  const features = new APIFeatures(
+    Tour.find(),
+    req.query,
+    req.formattedQuery
+  )
     .filter()
     .sort()
     .limit()
@@ -137,9 +143,13 @@ exports.getTour = c(async (req, res, next) => {
 
 // id'sine göre bir turu günceller
 exports.updateTour = c(async (req, res, next) => {
-  const updatedTour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
-    new: true, // güncelenmiş dökümanı döndürür
-  });
+  const updatedTour = await Tour.findByIdAndUpdate(
+    req.params.id,
+    req.body,
+    {
+      new: true, // güncelenmiş dökümanı döndürür
+    }
+  );
 
   res.status(200).json({ message: "Tur Güncellendi", tour: updatedTour });
 });

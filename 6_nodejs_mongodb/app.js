@@ -3,14 +3,38 @@ const tourRouter = require("./routes/tourRoutes");
 const userRouter = require("./routes/userRoute");
 const morgan = require("morgan");
 const AppError = require("./utils/appError");
-
+const rateLimit = require("express-rate-limit");
+const helmet = require("helmet");
+const sanitize = require("express-mongo-sanitize");
+const xss = require("xss");
+const hpp = require("hpp");
 const app = express();
 
 // gelen istekleri loglar
 app.use(morgan("dev"));
 
-// gelen isteklerin body'sini işle
-app.use(express.json());
+// helmet: güvenlik için headerlar ekle
+app.use(helmet());
+
+// rate limit: aynı ip adresinden belirli bir süre içerisnde gelebilcek istek sınırını belirleme
+const limiter = rateLimit({
+  max: 10, // aynı ip adresinden gelicek mak istek hakkı
+  windowMs: 15 * 60 * 1000, // ms cinsinden 15 dakika
+  message:
+    "15 dakika içerisindek istek hakkınızı doldurdunuz. Daha sonra tekrar deneyiniz",
+  legacyHeaders: false,
+});
+
+app.use("/api", limiter);
+
+// gelen isteklerin body'sini işle (json > js)
+app.use(express.json({ limit: "10kb" }));
+
+// mongoSanitize: kullanıcı giridilerinde (body/params/headers/query) js kodu tespit ettiği zaman bozar.
+app.use(sanitize());
+
+// hpp: parametre kirlilğini önler
+app.use(hpp());
 
 // turlar ile alakalı yolları projey tanıt
 app.use("/api/tours", tourRouter);

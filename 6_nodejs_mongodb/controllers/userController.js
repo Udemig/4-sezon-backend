@@ -12,13 +12,22 @@ exports.updateMe = c(async (req, res, next) => {
   const filtred = filterObject(req.body, "name", "email");
 
   // 3) Kullanıcı bilgilerini güncelle
-  const updatedUser = await User.findByIdAndUpdate(req.user.id, filtred, { new: true });
+  const updatedUser = await User.findByIdAndUpdate(req.user.id, filtred, {
+    new: true,
+  });
 
   // 4) Client'a cevap gönder
-  res.status(200).json({ message: "Kullanıcı başarıyla güncellendi", user: updatedUser });
+  res.status(200).json({
+    message: "Kullanıcı başarıyla güncellendi",
+    user: updatedUser,
+  });
 });
 
-exports.deleteMe = c(async (req, res, next) => {});
+exports.deleteMe = c(async (req, res, next) => {
+  await User.findByIdAndUpdate(req.user.id, { active: false });
+
+  res.status(200).json({ message: "Hesap devre dışı bırakıldı" });
+});
 
 exports.getAllUsers = (req, res) => {
   res.status(200).json("getAllUsers çalıştı");
