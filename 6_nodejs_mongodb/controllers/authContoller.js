@@ -51,9 +51,6 @@ exports.signUp = c(async (req, res, next) => {
 exports.login = c(async (req, res, next) => {
   const { email, password } = req.body;
 
-  console.log(req.body);
-  return;
-
   // 1) email ve şifre geldi mi kontrol et
   if (!email || !password) {
     return next(new Err(400, "Lütfen mail ve şifrenizi giriniz"));
@@ -89,7 +86,7 @@ exports.logout = async (req, res) => {};
 // - geçerli değilse hata fırlat
 exports.protect = c(async (req, res, next) => {
   // 1) Tokeni al ve tokenin tanımlı olduğunu kontrol et
-  let token = req.headers.authorization;
+  let token = req.cookies.jwt || req.headers.authorization;
 
   if (token && token.startsWith("Bearer")) {
     // gelen metinden bearer kelimesini çıkart

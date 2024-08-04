@@ -94,6 +94,34 @@ const tourSchema = new Schema(
     },
 
     hour: Number,
+
+    // başlangıç noktası
+    startLocation: {
+      type: { type: String, default: "Point", enum: "Point" },
+      description: String,
+      adress: String,
+      coordinates: [Number],
+    },
+
+    // Embedding
+    // Turun ziyaret noktaları
+    locations: [
+      {
+        type: { type: String, default: "Point", enum: "Point" },
+        description: String,
+        coordinates: [Number],
+        day: Number,
+      },
+    ],
+
+    // Parent Refferance
+    // Turun rehberleri
+    guides: [
+      {
+        type: Schema.ObjectId, // referans tanımında tip herzaman ObjectId'dir
+        ref: "User", // id'lerin hangi kolleksiyona ait ait olduğunu söyledik.
+      },
+    ],
   },
   // şema ayarları
   {
@@ -101,6 +129,14 @@ const tourSchema = new Schema(
     toObject: { virtuals: true },
   }
 );
+
+// ! Virtual Populate
+// Normalde yorumları child refferance ile sadece yorum dökümanında hangi tura atıldıklarının bilgisini tuttuk. Şuan 1 turun verisi alındığında o tura ait olan yorumları göremiyoruz çünkü parent refferance tercih etmedik. Bu tarz durumlarda virtual populate yöntemi ile child refferance ile tanımlanan yorumları client'a turun verileri ile birlikte göndermemiz mümkün
+tourSchema.virtual("reviews", {
+  ref: "Review",
+  foreignField: "tour", // bu dökümanındaki _id alanının yorum dökümanındaki karşılığını yazıyoruz
+  localField: "_id", // yorum dökümanındaki tour alanının bu dökümandaki karşılığını yazıyoruz
+});
 
 // ! Virtual Property
 // Örn: Frontend ekibi bizden urlde kullanabilmek için tur isminin slug verisyonunu istesin.
@@ -148,6 +184,19 @@ tourSchema.pre("find", function (next) {
 tourSchema.pre("aggregate", function (next) {
   // premium olanların rapora dahil edilmemesi için aggregation pipeline'a başlangıç adımı olarak premium'ları çıkaran bir adım ekliyecez
   this.pipeline().unshift({ $match: { premium: { $ne: true } } });
+
+  next();
+});
+
+// ! Kullanıcı veritabanından alınmaya çalışıldığında:
+// * Referanslar olarak tanıtılmış alanları populate ile gerçek verilerle doldur
+tourSchema.pre(/^find/, function (next) {
+  this.populate({
+    path: "guides", // tur nesnesi içerisnde doldurulması gereken alanın ismi
+    // veri kayıtlarını dolduruken istenmeyen field names
+    select:
+      "-password -__v -passResetToken -passResetExpires -passChangedAt",
+  });
 
   next();
 });

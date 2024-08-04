@@ -158,7 +158,7 @@ Data modeling, veri yapılarının, kısıtlamalarını, ilişkilerini ve diğer
 
 2. Embedding (Gömme) / Denormalization:
 
-- belirli blegenin içerisindeki verileri diğer belegelere doğradana gömülü olarak tanımlamay yarar
+- belirli blegenin içerisindeki verileri diğer belegelere doğrudan gömülü olarak tanımlamaya yarar
 
 ---
 
@@ -185,9 +185,42 @@ id:46534,
 text:"Bu video çok iyiydi",
 createdAt:24.10.2019,
 user:{
-  id:455,
-  name:"ahmet",
-  surname:"yıldız",
-  phone: 35234645650498
+id:455,
+name:"ahmet",
+surname:"yıldız",
+phone: 35234645650498
 }
 }
+
+# Veri Tabanı Modellerinde İlişkiler
+
+- One to One (1:1): Bir kolleksiyondaki her bir kayıt diğer kolleksiyondaki tek bir kayıt ile ilşkilendirilir.
+
+- One to Many (1:Many): Bir kolleksiyondaki gher bir kayıt diğer kolleksiyondaki birden fazla kayıt ile ilişkilendirilir.
+
+- Many to Many (Many:Many): Bir kolleksiyondaki birden çok döküman farklı kolleksiyondaki birden çok dökümanla ilişkilendirilebilir.
+
+# Hangi durumda embedding hangi durumda refferencing kullanıyoruz?
+
+                                Embedding                             Refferencing
+
+1. İlişki Tipi : 1:Few, 1:Many, 1:1 1:Many, 1:Ton, Many:Many, 1:1
+
+2. Erişim Durumu : Okuma daha yüksekse ve Veri çok güncelleniyorsa
+   veri çok değişmiyorsa Düşük (Okuma/Yazma) Oranı
+   Yüksek (Okuma/Yazma) Oranı
+
+3. Yakınlık Durumu : Dökümanlar birbiri ile çok alakalıysa Bazı durumlarda birlikte alınması gerekirken
+   ve sürekli birlikte kullanılıyorsa bazende birbirinde bağımsız olarak değerl.
+
+# Refferance Türleri
+
+- Child Refferance
+
+- Parent Refferance
+
+- Two Way Refferrance
+
+# Populate
+
+- `populate`, mongoose kullanarak bir mongodb belgesi sorguladığımızda, o belge içinde referans verilen başka bir kolleksiyondaki belgeleri otomatik olarak doldurmamızı sağlayan yöntemdir. Sql'deki "JOİN" in görevini yapar. Referans olarak tanımladığımız id'leri asıl veri kayıtlarıyla doldurur.

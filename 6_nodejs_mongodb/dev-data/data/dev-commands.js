@@ -2,6 +2,7 @@
 const fs = require("fs");
 const mongoose = require("mongoose");
 const Tour = require("../../models/tourModel");
+const User = require("../../models/userModel");
 
 // dotenv kütüphaneisni çevre değişkenlere eirşmek için kuruyoruz
 require("dotenv").config();
@@ -15,12 +16,14 @@ mongoose
   );
 
 // json dosyasından verileri al
-const tours = JSON.parse(fs.readFileSync(`${__dirname}/tours-simple.json`));
+const tours = JSON.parse(fs.readFileSync(`${__dirname}/tours.json`));
+const users = JSON.parse(fs.readFileSync(`${__dirname}/users.json`));
 
 // devdata klasöründeki json dosylarından veirleri alıp mongodbye aktar
 const importData = async () => {
   try {
-    await Tour.create(tours, { validateBeforSave: false });
+    await Tour.create(tours, { validateBeforeSave: false });
+    await User.create(users, { validateBeforeSave: false });
     console.log("Json verileri kolleksiyona aktarıldı");
   } catch (error) {
     console.log(error);
@@ -32,6 +35,7 @@ const importData = async () => {
 const deleteData = async () => {
   try {
     await Tour.deleteMany();
+    await User.deleteMany();
     console.log("Bütün veriler temizlendi");
   } catch (error) {
     console.log(error);

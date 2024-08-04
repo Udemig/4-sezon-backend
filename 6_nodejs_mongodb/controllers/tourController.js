@@ -3,6 +3,7 @@ const Tour = require("../models/tourModel");
 const APIFeatures = require("../utils/apiFeatures");
 const Err = require("../utils/appError");
 const c = require("../utils/catchAsync");
+const factory = require("./handlerFactory");
 
 // zorluğa göre istatistikleri hesapla
 exports.getTourStats = c(async (req, res, next) => {
@@ -128,35 +129,18 @@ exports.getAllTours = c(async (req, res, next) => {
 });
 
 // yeni bir tur oluşturur
-exports.createTour = c(async (req, res, next) => {
-  const newTour = await Tour.create(req.body);
-
-  res.status(201).json({ message: "Yeni Tur Oluşturuldu", tour: newTour });
-});
+exports.createTour = factory.createOne(Tour);
 
 // id'sine göre bir tur alır
 exports.getTour = c(async (req, res, next) => {
-  const tour = await Tour.findById(req.params.id);
+  // detay sayfası için virtual olarak eklenen yorumlara populate uygula
+  const tour = await Tour.findById(req.params.id).populate("reviews");
 
   res.status(200).json({ message: "1 Tur Alındı", tour });
 });
 
 // id'sine göre bir turu günceller
-exports.updateTour = c(async (req, res, next) => {
-  const updatedTour = await Tour.findByIdAndUpdate(
-    req.params.id,
-    req.body,
-    {
-      new: true, // güncelenmiş dökümanı döndürür
-    }
-  );
-
-  res.status(200).json({ message: "Tur Güncellendi", tour: updatedTour });
-});
+exports.updateTour = factory.updateOne(Tour);
 
 // id'sine göre bir turu siler
-exports.deleteTour = c(async (req, res, next) => {
-  await Tour.findByIdAndDelete(req.params.id);
-
-  res.status(204).json({ message: "Tur Silindi" });
-});
+exports.deleteTour = factory.deleteOne(Tour);

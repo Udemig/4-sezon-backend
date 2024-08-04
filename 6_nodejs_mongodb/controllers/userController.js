@@ -2,6 +2,7 @@ const c = require("../utils/catchAsync");
 const Err = require("../utils/appError");
 const User = require("../models/userModel");
 const filterObject = require("../utils/filterObject");
+const factory = require("./handlerFactory");
 
 exports.updateMe = c(async (req, res, next) => {
   // 1) Şifreyi güncellemeye çalışırsa hata ver
@@ -33,18 +34,12 @@ exports.getAllUsers = (req, res) => {
   res.status(200).json("getAllUsers çalıştı");
 };
 
-exports.createUser = (req, res) => {
-  res.status(200).json("createUser çalıştı");
-};
+exports.createUser = factory.createOne(User);
 
 exports.getUser = (req, res) => {
   res.status(200).json("getUser çalıştı");
 };
 
-exports.updateUser = (req, res) => {
-  res.status(200).json("updateUser çalıştı");
-};
+exports.updateUser = factory.updateOne(User);
 
-exports.deleteUser = (req, res) => {
-  res.status(200).json("deleteUser çalıştı");
-};
+exports.deleteUser = factory.deleteOne(User);
