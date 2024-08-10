@@ -104,43 +104,24 @@ exports.aliasTopTours = (req, res, next) => {
 };
 
 // bütün turları alır
-exports.getAllTours = c(async (req, res, next) => {
-  console.log(req.query);
-
-  // 1) API Features class'ından örnek al (geriye sorguyu oluşturup döndürür)
-  const features = new APIFeatures(
-    Tour.find(),
-    req.query,
-    req.formattedQuery
-  )
-    .filter()
-    .sort()
-    .limit()
-    .pagination();
-
-  // 2) sorguyu çalıştır
-  const tours = await features.query;
-
-  res.status(200).json({
-    message: "Bütün turlar alındı",
-    results: tours.length,
-    tours,
-  });
-});
+exports.getAllTours = factory.getAll(Tour);
 
 // yeni bir tur oluşturur
 exports.createTour = factory.createOne(Tour);
 
 // id'sine göre bir tur alır
-exports.getTour = c(async (req, res, next) => {
-  // detay sayfası için virtual olarak eklenen yorumlara populate uygula
-  const tour = await Tour.findById(req.params.id).populate("reviews");
-
-  res.status(200).json({ message: "1 Tur Alındı", tour });
-});
+exports.getTour = factory.getOne(Tour, "reviews");
 
 // id'sine göre bir turu günceller
 exports.updateTour = factory.updateOne(Tour);
 
 // id'sine göre bir turu siler
 exports.deleteTour = factory.deleteOne(Tour);
+
+// belirli koordinatlar içerisindeki turları filtrele
+exports.getToursWithin = c(async (req, res, next) => {
+  // TODO istekle gelen parametrediki merkez nokta ve yarıçapa göre filtreleme
+  res.status(200).json({
+    message: "Belirlenen sınırlar içerisindeki bütün turlar alındı",
+  });
+});

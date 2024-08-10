@@ -19,7 +19,7 @@ app.use(helmet());
 
 // rate limit: aynı ip adresinden belirli bir süre içerisnde gelebilcek istek sınırını belirleme
 const limiter = rateLimit({
-  max: 10, // aynı ip adresinden gelicek mak istek hakkı
+  max: 100, // aynı ip adresinden gelicek mak istek hakkı
   windowMs: 15 * 60 * 1000, // ms cinsinden 15 dakika
   message:
     "15 dakika içerisindek istek hakkınızı doldurdunuz. Daha sonra tekrar deneyiniz",

@@ -30,15 +30,11 @@ exports.deleteMe = c(async (req, res, next) => {
   res.status(200).json({ message: "Hesap devre dışı bırakıldı" });
 });
 
-exports.getAllUsers = (req, res) => {
-  res.status(200).json("getAllUsers çalıştı");
-};
+exports.getAllUsers = factory.getAll(User);
 
 exports.createUser = factory.createOne(User);
 
-exports.getUser = (req, res) => {
-  res.status(200).json("getUser çalıştı");
-};
+exports.getUser = factory.getOne(User);
 
 exports.updateUser = factory.updateOne(User);
 

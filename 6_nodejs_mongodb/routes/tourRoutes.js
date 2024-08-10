@@ -10,6 +10,7 @@ const {
   aliasTopTours,
   getTourStats,
   getMonthlyPlan,
+  getToursWithin,
 } = require("../controllers/tourController");
 const reviewController = require("../controllers/reviewController");
 const formatQuery = require("../middleware/formatQuery");
@@ -35,6 +36,9 @@ router
   .route("/monthly-plan/:year")
   .get(protect, restrictTo("admin"), getMonthlyPlan);
 
+// belirli coğrafi sınırlar içiersndeki turları filtreleme
+router.route("/tours-within/:distance/center/:latlng").get(getToursWithin);
+
 // bu satırın devamındaki bütün endpointlerden önce bu middleware'ler çalışır ve sadece oturumu açık kullanıların route'a erişimine izin verir
 router.use(protect);
 
@@ -58,7 +62,7 @@ router
 
 router
   .route("/:tourID/reviews")
-  .get(reviewController.getAllReviews)
-  .post(reviewController.createReview);
+  .get(formatQuery, reviewController.getAllReviews)
+  .post(reviewController.setRefIds, reviewController.createReview);
 
 module.exports = router;

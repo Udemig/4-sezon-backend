@@ -1,6 +1,7 @@
 const express = require("express");
 const userController = require("../controllers/userController");
 const authContoller = require("../controllers/authContoller");
+const formatQuery = require("../middleware/formatQuery");
 
 const router = express.Router();
 
@@ -23,7 +24,10 @@ router.patch("/update-me", userController.updateMe);
 
 router.delete("/delete-me", userController.deleteMe);
 
-router.route("/").get(userController.getAllUsers).post(userController.createUser);
+router
+  .route("/")
+  .get(formatQuery, userController.getAllUsers)
+  .post(userController.createUser);
 
 router
   .route("/:id")

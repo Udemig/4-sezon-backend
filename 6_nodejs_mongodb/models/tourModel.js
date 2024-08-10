@@ -130,6 +130,8 @@ const tourSchema = new Schema(
   }
 );
 
+
+
 // ! Virtual Populate
 // Normalde yorumları child refferance ile sadece yorum dökümanında hangi tura atıldıklarının bilgisini tuttuk. Şuan 1 turun verisi alındığında o tura ait olan yorumları göremiyoruz çünkü parent refferance tercih etmedik. Bu tarz durumlarda virtual populate yöntemi ile child refferance ile tanımlanan yorumları client'a turun verileri ile birlikte göndermemiz mümkün
 tourSchema.virtual("reviews", {
@@ -188,7 +190,7 @@ tourSchema.pre("aggregate", function (next) {
   next();
 });
 
-// ! Kullanıcı veritabanından alınmaya çalışıldığında:
+//! Kullanıcı veritabanından alınmaya çalışıldığında:
 // * Referanslar olarak tanıtılmış alanları populate ile gerçek verilerle doldur
 tourSchema.pre(/^find/, function (next) {
   this.populate({
@@ -200,6 +202,12 @@ tourSchema.pre(/^find/, function (next) {
 
   next();
 });
+
+//! Index
+// Kolleksiyonların belirli alanlarına göre sıralanmış bir kopyasını tutar.
+// Avantaj: Sıraladığım alana göre yapılan filtreleme ve sıralama isteklerine daha hızlı cevap.
+// Dezavantaj: Ekstra Maaliyet / Yazma İsteklerinde yavaşlama
+tourSchema.index({ price: 1, ratingsAverage: -1 });
 
 // model oluştur (veritbanındaki tur verisni yönetmek için kullanıcaz)
 const Tour = model("Tour", tourSchema);

@@ -3,6 +3,7 @@ const fs = require("fs");
 const mongoose = require("mongoose");
 const Tour = require("../../models/tourModel");
 const User = require("../../models/userModel");
+const Review = require("../../models/reviewModel");
 
 // dotenv kütüphaneisni çevre değişkenlere eirşmek için kuruyoruz
 require("dotenv").config();
@@ -18,12 +19,14 @@ mongoose
 // json dosyasından verileri al
 const tours = JSON.parse(fs.readFileSync(`${__dirname}/tours.json`));
 const users = JSON.parse(fs.readFileSync(`${__dirname}/users.json`));
+const reviews = JSON.parse(fs.readFileSync(`${__dirname}/reviews.json`));
 
-// devdata klasöründeki json dosylarından veirleri alıp mongodbye aktar
+// devdata klasöründeki json dosyalarından veirleri alıp mongodbye aktar
 const importData = async () => {
   try {
     await Tour.create(tours, { validateBeforeSave: false });
     await User.create(users, { validateBeforeSave: false });
+    await Review.create(reviews, { validateBeforeSave: false });
     console.log("Json verileri kolleksiyona aktarıldı");
   } catch (error) {
     console.log(error);
@@ -36,6 +39,7 @@ const deleteData = async () => {
   try {
     await Tour.deleteMany();
     await User.deleteMany();
+    await Review.deleteMany();
     console.log("Bütün veriler temizlendi");
   } catch (error) {
     console.log(error);

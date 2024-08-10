@@ -401,14 +401,14 @@
   {
     "_id": "5c8a3de514eb5c17645c9143",
     "review": "Sem risus tempor auctor mattis netus montes tincidunt mollis lacinia natoque adipiscing",
-    "rating": 5,
+    "rating": 1,
     "user": "5c8a24a02f8fb814b56fa193",
     "tour": "5c88fa8cf4afda39709c2961"
   },
   {
     "_id": "5c8a3e0714eb5c17645c9144",
     "review": "Feugiat egestas ac pulvinar quis dui ligula tempor ad platea quisque scelerisque!",
-    "rating": 5,
+    "rating": 1,
     "user": "5c8a24a02f8fb814b56fa193",
     "tour": "5c88fa8cf4afda39709c2951"
   },
