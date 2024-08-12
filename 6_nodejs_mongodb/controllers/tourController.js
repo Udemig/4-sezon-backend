@@ -1,7 +1,6 @@
 // API'a gelen tur ile alakalı http isteklerine cevap gönderen bütün fonksiyonlar bu dosyada yer alıcak
 const Tour = require("../models/tourModel");
-const APIFeatures = require("../utils/apiFeatures");
-const Err = require("../utils/appError");
+const AppError = require("../utils/appError");
 const c = require("../utils/catchAsync");
 const factory = require("./handlerFactory");
 
@@ -120,8 +119,67 @@ exports.deleteTour = factory.deleteOne(Tour);
 
 // belirli koordinatlar içerisindeki turları filtrele
 exports.getToursWithin = c(async (req, res, next) => {
-  // TODO istekle gelen parametrediki merkez nokta ve yarıçapa göre filtreleme
+  // parametrelere eriş
+  const { distance, latlng, unit } = req.params;
+
+  // enlem ve boylamı değişkene aktar
+  const [lat, lng] = latlng.split(",");
+
+  // merkez noktası göndeirlmediyse hata fırlat
+  if (!lat || !lng)
+    return next(new AppError(400, "Lütfen merkez noktayı tanımlayın"));
+
+  // yarıçağı radyan formatına çevir
+  const radius = unit == "mi" ? distance / 3963.2 : distance / 6378.1;
+
+  // belirlenen dairesel alandaki turları filtrele
+  const tours = await Tour.find({
+    startLocation: { $geoWithin: { $centerSphere: [[lat, lng], radius] } },
+  });
+
+  // client'a cevap gönder
   res.status(200).json({
     message: "Belirlenen sınırlar içerisindeki bütün turlar alındı",
+    results: tours.length,
+    tours,
   });
+});
+
+// turların kullanıcıdan uzaklığını hesapla
+exports.getDistances = c(async (req, res, next) => {
+  // urldeki parametreleri al
+  const { latlng, unit } = req.params;
+
+  // enlem boylam'ı ayır
+  const [lat, lng] = latlng.split(",");
+
+  // enlem veya boylam yoksa hata fırlat
+  if (!lat || !lng)
+    return next(new AppError(400, "Lütfen merkez noktayı tanımlayın"));
+
+  // unit'ae göre radyanı çevir
+  const multiplier = unit == "mi" ? 0.000621371192 : 0.001;
+
+  // turların kullannıcının konumunda uzaklığını hesapla
+  const distances = await Tour.aggregate([
+    // 1) uzaklığı hesapla
+    {
+      $geoNear: {
+        near: { type: "Point", coordinates: [+lat, +lng] }, // merkez nokta
+        distanceField: "distance", // uzaklıkları hesapla
+        distanceMultiplier: multiplier,
+      },
+    },
+
+    // 2) nesneden istediğimiz değerleri seç
+    {
+      $project: {
+        name: 1,
+        distance: 1,
+      },
+    },
+  ]);
+
+  // client'a cevap gönder
+  res.status(200).json({ message: "Uzaklıklar hesaplandı", distances });
 });

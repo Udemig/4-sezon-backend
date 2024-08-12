@@ -11,6 +11,7 @@ const {
   getTourStats,
   getMonthlyPlan,
   getToursWithin,
+  getDistances,
 } = require("../controllers/tourController");
 const reviewController = require("../controllers/reviewController");
 const formatQuery = require("../middleware/formatQuery");
@@ -37,7 +38,12 @@ router
   .get(protect, restrictTo("admin"), getMonthlyPlan);
 
 // belirli coğrafi sınırlar içiersndeki turları filtreleme
-router.route("/tours-within/:distance/center/:latlng").get(getToursWithin);
+router
+  .route("/tours-within/:distance/center/:latlng/unit/:unit")
+  .get(getToursWithin);
+
+// tur uzaklıklarını hesaplar
+router.route("/distances/:latlng/unit/:unit").get(getDistances);
 
 // bu satırın devamındaki bütün endpointlerden önce bu middleware'ler çalışır ve sadece oturumu açık kullanıların route'a erişimine izin verir
 router.use(protect);

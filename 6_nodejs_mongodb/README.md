@@ -224,3 +224,49 @@ phone: 35234645650498
 # Populate
 
 - `populate`, mongoose kullanarak bir mongodb belgesi sorguladığımızda, o belge içinde referans verilen başka bir kolleksiyondaki belgeleri otomatik olarak doldurmamızı sağlayan yöntemdir. Sql'deki "JOİN" in görevini yapar. Referans olarak tanımladığımız id'leri asıl veri kayıtlarıyla doldurur.
+
+# Medya Depolama
+
+## 1.YOL - Dosya Sistemi Üzerinde Depolama
+
+### Avantaj
+
+- Basit ve Kolay
+
+- Düşük Maliyet
+
+- Kontrol tamamen bizde
+
+- Hız: Sunucu ile dosyalara aynı yerel ağda olduğı için dosya erişimi daha hızlı olur
+
+### Dezavantaj
+
+- Ölçekelenemiyor
+
+- Bakım: Yedeklemesi vs. bizim sorumluluğumuzda olduğu için arıza durumunda veri kaybedebiliriz.
+
+- Dağitık erişim yok
+
+## 2.YOL - Bulut Depolama (Amazon S3, Google Cloud, Firebase Storage ...)
+
+### Avantaj
+
+- Ölçeklenbilir
+
+- Güvenlik
+
+- Dağıtık erişim
+
+- Bakım
+
+## Dezavantaj
+
+- Maaliyet
+
+- Bağımlılık
+
+## Hangi Durumda Hangi Yöntem
+
+- Küçük projeler ve kısa süreli çözümler: Dosya sistemi
+
+- Büyük projeler ve uzun süreli çözümler: Bulut Depolama

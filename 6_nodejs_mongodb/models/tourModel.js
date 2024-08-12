@@ -130,7 +130,14 @@ const tourSchema = new Schema(
   }
 );
 
+//! Index
+// Kolleksiyonların belirli alanlarına göre sıralanmış bir kopyasını tutar.
+// Avantaj: Sıraladığım alana göre yapılan filtreleme ve sıralama isteklerine daha hızlı cevap.
+// Dezavantaj: Ekstra Maaliyet / Yazma İsteklerinde yavaşlama
+tourSchema.index({ price: 1, ratingsAverage: -1 });
 
+// Coğrafi veri için indexleme
+tourSchema.index({ startLocation: "2dsphere" });
 
 // ! Virtual Populate
 // Normalde yorumları child refferance ile sadece yorum dökümanında hangi tura atıldıklarının bilgisini tuttuk. Şuan 1 turun verisi alındığında o tura ait olan yorumları göremiyoruz çünkü parent refferance tercih etmedik. Bu tarz durumlarda virtual populate yöntemi ile child refferance ile tanımlanan yorumları client'a turun verileri ile birlikte göndermemiz mümkün
@@ -185,7 +192,7 @@ tourSchema.pre("find", function (next) {
 // Raporlama işlemlerinden önce veya sonra çalıştırılan middleware'lere verilen isim
 tourSchema.pre("aggregate", function (next) {
   // premium olanların rapora dahil edilmemesi için aggregation pipeline'a başlangıç adımı olarak premium'ları çıkaran bir adım ekliyecez
-  this.pipeline().unshift({ $match: { premium: { $ne: true } } });
+  this.pipeline().push({ $match: { premium: { $ne: true } } });
 
   next();
 });
@@ -202,12 +209,6 @@ tourSchema.pre(/^find/, function (next) {
 
   next();
 });
-
-//! Index
-// Kolleksiyonların belirli alanlarına göre sıralanmış bir kopyasını tutar.
-// Avantaj: Sıraladığım alana göre yapılan filtreleme ve sıralama isteklerine daha hızlı cevap.
-// Dezavantaj: Ekstra Maaliyet / Yazma İsteklerinde yavaşlama
-tourSchema.index({ price: 1, ratingsAverage: -1 });
 
 // model oluştur (veritbanındaki tur verisni yönetmek için kullanıcaz)
 const Tour = model("Tour", tourSchema);

@@ -20,7 +20,12 @@ router.use(authContoller.protect);
 
 router.patch("/update-password", authContoller.updatePassword);
 
-router.patch("/update-me", userController.updateMe);
+router.patch(
+  "/update-me",
+  userController.uploadUserPhoto, // fotoğrafımı ram'e kaydeder
+  userController.resize, // fotoğrafı yeniden boyutlandı sonra diske kaydet
+  userController.updateMe // diske kaydedilen foto ismini veritabanınına kaydet
+);
 
 router.delete("/delete-me", userController.deleteMe);
 
