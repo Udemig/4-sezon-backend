@@ -58,12 +58,17 @@ exports.resize = (req, res, next) => {
   // diske kaydedilecek dosya ismini oluştur
   const filename = `user-${req.user.id}-${Date.now()}.jpeg`;
 
+  // updateMe fonksiyonunda dosya ismine erişebilmek için req içersine ekle
+  req.file.filename = filename;
+
   // dosyayı işle
   sharp(req.file.buffer)
     .resize(400, 400) // boyutu belirle
     .toFormat("jpeg") // resim formatını jpeg'e çevir
     .jpeg({ quality: 30 }) // kaliteyi değiştir
     .toFile(`public/img/users/${filename}`); // fotoyu diske kaydedicek
+
+  next();
 };
 
 // dosya yükleme işlemini yapan mw
@@ -76,7 +81,7 @@ exports.updateMe = c(async (req, res, next) => {
     return next(new Err(400, "Şifreyi bu route ile güncelleyemezsiniz"));
 
   // 2) İsteğin body kısmından sadece izin verilen değerleri al
-  const filtred = filterObject(req.body, "name", "email");
+  let filtred = filterObject(req.body, "name", "email");
 
   // eğer isteğin içerisinde fotoğraf varsa kullanıcı bilgileri arasına storage yüklenen fotoğraf ismini ekle
   if (req.file) filtred.photo = req.file.filename;
