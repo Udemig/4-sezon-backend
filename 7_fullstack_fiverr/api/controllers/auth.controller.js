@@ -2,12 +2,31 @@ import bcrypt from "bcrypt";
 import User from "../models/user.model.js";
 import error from "../utils/error.js";
 import jwt from "jsonwebtoken";
+import cloudinary from "../utils/cloudinary.js";
 
 //* kaydol: yeni hesap oluştur
 export const register = async (req, res, next) => {
   try {
     // şifreyi hashle ve saltla
     const hashedPass = bcrypt.hashSync(req.body.password, 12);
+
+    // global değişken
+    let photo;
+
+    // bulut depolama alanına fotoyu yükle
+    await cloudinary.uploader.upload(req.file.path, (err, result) => {
+      // hata olursa ele al
+      if (err) {
+        console.log("hata oluştu");
+        return console.log(err);
+      }
+
+      // buluta yüklenen fotoyu global değişkene aktar
+      photo = result.secure_url;
+    });
+
+    // veritabanına kaydedilecek olan veriye buluta yüklenen fotonun url'ini ekliyoruz
+    req.body.photo = photo;
 
     // veritabanına kaydedilecek kullanıcıyı oluştur ve kaydet
     const newUser = await User.create({
@@ -24,6 +43,7 @@ export const register = async (req, res, next) => {
       user: newUser,
     });
   } catch (err) {
+    console.log(err);
     //client'a hata detaylarını gönder
     next(error(400, "Hesap oluşturulurken bir hata meydana geldi"));
   }
@@ -60,6 +80,7 @@ export const login = async (req, res, next) => {
     res.cookie("token", token).status(200).json({
       message: "Hesaba giriş yapıldı",
       user,
+      token,
     });
   } catch (err) {
     next(error(400, "Giriş yaparken sorun oluştu"));

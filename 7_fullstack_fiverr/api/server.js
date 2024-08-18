@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import authRouter from "./routes/auth.routes.js";
 import morgan from "morgan";
+import cors from "cors";
 
 // env dosyasındaki verilere erişmek için kurulum
 dotenv.config();
@@ -20,7 +21,10 @@ const app = express();
 //a) body/query alanlarındaki  json içeriğinin işlenmesi sağlar
 app.use(express.json());
 
-//b) konsola istek bilgilerini yazan mw
+//b) CORS hatalarının önüne geçmek için header'lar ekler
+app.use(cors({ origin: "http://localhost:5173", credentials: true }));
+
+//c) konsola istek bilgilerini yazan mw
 app.use(morgan("dev"));
 
 // kontrol route'u
