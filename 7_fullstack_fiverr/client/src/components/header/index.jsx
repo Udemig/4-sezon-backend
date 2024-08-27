@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { IoSearch } from "react-icons/io5";
 import User from "./user";
 import Links from "./links";
@@ -8,6 +8,16 @@ import { AuthContext } from "../../context/authContext";
 const Header = () => {
   const { user } = useContext(AuthContext);
 
+  const navigate = useNavigate();
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    const text = e.target[0].value;
+
+    navigate(`/search?query=${text}`);
+  };
+
   return (
     <header className="p-5 shadow">
       <div className="max-w-[1440px] mx-auto flex justify-between gap-4 md:gap-8">
@@ -15,7 +25,10 @@ const Header = () => {
           <img src="/fiverr.png" alt="fiverr" className="w-[100px]" />
         </Link>
 
-        <form className="flex-1 flex border rounded overflow-hidden max-w-[600px]">
+        <form
+          onSubmit={handleSubmit}
+          className="flex-1 flex border rounded overflow-hidden max-w-[600px]"
+        >
           <input
             className="w-full h-full px-3 outline-none"
             type="search"

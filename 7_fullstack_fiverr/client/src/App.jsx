@@ -4,6 +4,8 @@ import Login from "./pages/login";
 import Register from "./pages/register";
 import Header from "./components/header";
 import Footer from "./components/footer";
+import Search from "./pages/search";
+import AddGig from "./pages/add_gig";
 
 const App = () => {
   return (
@@ -15,6 +17,9 @@ const App = () => {
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/search" element={<Search />} />
+          <Route path="/add-gig" element={<AddGig />} />
+          <Route path="/detail" element={<h1>DETAY</h1>} />
         </Routes>
       </div>
 
