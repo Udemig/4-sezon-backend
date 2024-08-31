@@ -10,6 +10,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@splidejs/react-splide": "^0.7.12",
+    "@tanstack/react-query-devtools": "^5.53.1",
     "axios": "^1.7.4",
     "moment": "^2.30.1",
     "react": "^18.2.0",

@@ -18,7 +18,7 @@ const Search = () => {
   };
 
   // api'dan hizmetleri al
-  const { isLoading, error, data } = useQuery({
+  const { isLoading, error, data, refetch } = useQuery({
     queryKey: ["gigs", params],
     queryFn: () =>
       api.get("/gigs", { params }).then((res) => res.data.gigs),
@@ -35,7 +35,7 @@ const Search = () => {
       {isLoading ? (
         <Loader />
       ) : error ? (
-        <Error info={error} />
+        <Error info={error} retry={refetch} />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5 my-5">
           {data && data.map((item) => <Card key={item._id} item={item} />)}

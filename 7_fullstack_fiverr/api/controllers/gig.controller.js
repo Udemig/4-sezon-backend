@@ -1,4 +1,5 @@
 import Gig from "../models/gig.model.js";
+import cloudinary from "../utils/cloudinary.js";
 import error from "../utils/error.js";
 
 // filtreleme ayarlarını oluşturan method
@@ -63,11 +64,43 @@ export const createGig = async (req, res, next) => {
     return next(
       error(423, "Sadece 'seller' hesaplar hizmet oluşturabilir")
     );
-  //TODO FORMDATA Headerı eklendiğinde body'e erişilemiyor
-  //TODO Browser'daki çerezleri backend'e gönderemiyoruz
-  console.log(req.body);
+
+  // kapak fotoğrının url'ini tutucağmmız değişken
+  let cover;
+
+  // kapak fotoğrafını yükle
+  await cloudinary.uploader.upload(
+    req.files.cover[0].path,
+    (err, result) => {
+      if (err) return next(error(500, "Bir sorun oluştu"));
+
+      cover = result.secure_url;
+    }
+  );
+
+  // Backende gelen bütün fotoğrafları buluta yüklemek için istekleri hazırla
+  let imagesToUpload = req.files.images.map((file) =>
+    cloudinary.uploader.upload(file.path, (err, result) => {
+      if (err) return next(error(500, "Bir sorun oluştu"));
+
+      return result;
+    })
+  );
+
+  // bütün yükleme isteklerini tetikle
+  const uploads = await Promise.all(imagesToUpload);
+
+  // yüklenen dosyların sadece url'lerin oluşan dizzi
+  const images = uploads.map((i) => i.secure_url);
 
   try {
+    // resimleri body'e ekle
+    req.body.images = images;
+    req.body.cover = cover;
+
+    // hizmetleri diziyi çevir
+    req.body.features = req.body.features.split(",");
+
     //2) yeni hizmet oluştur / kaydet
     const savedGig = await Gig.create({ ...req.body, user: req.userId });
 

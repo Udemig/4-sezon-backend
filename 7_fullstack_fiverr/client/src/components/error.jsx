@@ -1,14 +1,4 @@
-import { useQueryClient } from "@tanstack/react-query";
-
-const Error = ({ info }) => {
-  // kurulum
-  const queryClient = useQueryClient();
-
-  // mevcut sorguyu tekrar tetikler
-  const retry = () => {
-    queryClient.invalidateQueries({ queryKey: ["gigs"] });
-  };
-
+const Error = ({ info, retry }) => {
   return (
     <>
       <div className="bg-red-500 text-white rounded-md my-20 p-5 flex flex-col items-center gap-4">

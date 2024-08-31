@@ -3,13 +3,27 @@ import { inputs } from "../../utils/constants";
 import Select from "./select";
 import { useMutation } from "@tanstack/react-query";
 import api from "../../utils/api";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 const AddGig = () => {
+  const navigate = useNavigate();
+
   const { isPending, mutate } = useMutation({
     mutationFn: (body) =>
       api.post(`/gigs`, body, {
         headers: { "Content-Type": "multipart/form-data" },
       }),
+
+    onSuccess: (data) => {
+      toast.success("Hizmet başarıyla oluşturuldu");
+
+      navigate(`/detail/${data.data.gig._id}`);
+    },
+
+    onError: (err) => {
+      toast.error(err.message);
+    },
   });
 
   // form gönderilince
@@ -18,16 +32,9 @@ const AddGig = () => {
 
     // inputlardkai verilere eriş
     const formData = new FormData(e.target);
-    const gigData = Object.fromEntries(formData.entries());
-
-    // fotoğraflar inputundaki bütün fotoları al
-    gigData.images = e.target.images.files;
-
-    // özellikleri string'den diziye çevir
-    gigData.features = gigData.features.split(",");
 
     // api'a post isteği at
-    mutate(gigData);
+    mutate(formData);
   };
 
   return (
