@@ -64,7 +64,14 @@ const gigSchema = new Schema(
   },
   {
     timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
   }
 );
+
+// ortalama ratingi veritabanında tutmaya gerek olmadığından zaten tutulan  iki değerin hespalaması sonucu ortaya çıktığı için get isteklerinde client'a göndermeden önce ortalamayı hesaplayıp ekleyicez
+gigSchema.virtual("avgRating").get(function () {
+  return (this.starCount / this.reviewCount).toFixed(2);
+});
 
 export default model("Gig", gigSchema);

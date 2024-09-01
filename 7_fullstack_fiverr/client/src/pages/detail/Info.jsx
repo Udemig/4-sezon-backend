@@ -31,7 +31,7 @@ const Info = ({ data }) => {
 
       <Splide>
         {data.images.map((url, key) => (
-          <SplideSlide>
+          <SplideSlide key={key}>
             <img className="h-[30vh] w-full object-contain" src={url} />
           </SplideSlide>
         ))}

@@ -5,6 +5,7 @@ import morgan from "morgan";
 import cors from "cors";
 import authRouter from "./routes/auth.routes.js";
 import gigRouter from "./routes/gig.routes.js";
+import reviewRouter from "./routes/review.routes.js";
 import cookieParser from "cookie-parser";
 
 // env dosyasındaki verilere erişmek için kurulum
@@ -46,6 +47,7 @@ app.route("/health").get((req, res) => {
 // route'ları tanımla
 app.use("/api/auth", authRouter);
 app.use("/api/gigs", gigRouter);
+app.use("/api/review", reviewRouter);
 
 // hata yönetimi için mw
 // controller'lardan yapılac tüm yönlendirmelerde bu mw çalışıcak

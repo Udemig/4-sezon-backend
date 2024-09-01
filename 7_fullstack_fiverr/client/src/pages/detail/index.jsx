@@ -6,6 +6,7 @@ import Error from "../../components/error";
 import Info from "./Info";
 import UserInfo from "./UserInfo";
 import OrderBox from "./OrderBox";
+import Reviews from "./Reviews";
 
 const Detail = () => {
   const { id } = useParams();
@@ -26,6 +27,7 @@ const Detail = () => {
           <div>
             <Info data={data} />
             <UserInfo user={data.user} />
+            <Reviews gigId={id} avgRating={data.avgRating} />
           </div>
 
           <OrderBox data={data} />
