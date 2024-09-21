@@ -1,6 +1,9 @@
 import Link from "next/link";
+import { notFound } from "next/navigation";
 
 const Comp1 = () => {
+  notFound();
+
   return (
     <div>
       <Link

@@ -1,15 +1,31 @@
 import localFont from "next/font/local";
 import "./globals.css";
+import Header from "./components/Header";
+import { Poppins } from "next/font/google";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
   variable: "--font-geist-sans",
   weight: "100 900",
 });
+
 const geistMono = localFont({
   src: "./fonts/GeistMonoVF.woff",
   variable: "--font-geist-mono",
   weight: "100 900",
+});
+
+// local font kurulumu
+const sofadi = localFont({
+  src: "./fonts/SofadiOne-Regular.ttf",
+  variable: "--sofadi-one",
+  weight: "100 900",
+});
+
+// remote form kurulumu
+const poppins = Poppins({
+  weight: ["300", "400"],
+  subsets: ["latin"],
 });
 
 export const metadata = {
@@ -21,8 +37,11 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased text-5xl font-semibold h-screen grid place-items-center`}
+        style={poppins.style}
+        className={`antialiased text-5xl font-semibold h-screen grid place-items-center`}
       >
+        <Header />
+
         {children}
       </body>
     </html>

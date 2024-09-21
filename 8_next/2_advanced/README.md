@@ -44,3 +44,43 @@
 - Next.js biz aksini belirtmedikçe oluşturudğumuz bütün componentlar server component olarak oluluşur. Next.js bizden her zaman olabildiğince fazla içeriği server component olarak tanımlamamızı bekler.
 
 - Her component'ı server comp yapamıyoruz. Kullanıcı etkileşimi gerektiren componentlar mecburen client comp olmalı. React hooklarını kullandığımızı comp.lar Client comp olmalır.
+
+# Data Fetching
+
+- Next.js çekilen veriyi belirli bir süre boyunca cache'de tutat ve veriyi çeken fonksiyonu belirli bir süre içerisinde tekrar çağırdığımızda api'dan veriyi tekrar almak yerine önceki sitekden gelen ve cache'de tutulan cevabı döndür.
+
+- Bu sayede:
+- - api dan cevap beklemek gerekmez > daha hızlı
+- - api'a gereksiz istek gitmez > daha az maliyet
+
+- Cache özelliği sayesinde api'dan gelen bir veriyi birden fazla sayfa veya bileşende kullanmak istiyorsa redux vb. state managment'larına gereke kalmadan bütün bileşenlerde api isteği atarız.
+
+# Next.js Fonksiyonları
+
+## useRouter
+
+- Sadece Client Component'larda kullanılır.
+
+- Proje içerisinde yönlendirme yapmak için kullanılır.
+
+- back() | forward() | refresh() | push() methodları var.
+
+## redirect
+
+- Sadece Server Component'larda kullanılır.
+
+- Proje içerisinde yönlendirme yapmak için kullanılır.
+
+## not-found
+
+- 404 sayfasına yönelndirir
+
+## usePathname
+
+- Sadece Client Component'larda kullanılır
+- Kullanıcının bulunduğu yolu alır.
+
+# useSearchParams
+
+- Sadece Client Component'larda kullanılır
+- url'deki arama parametrelerini alır

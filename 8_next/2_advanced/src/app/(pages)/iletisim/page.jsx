@@ -1,7 +1,15 @@
+import { redirect } from "next/navigation";
 import Input from "./input";
 
 const Page = () => {
-  console.log("🎾 İletişim Render Oldu 🎾");
+  const user = {
+    name: "furkan",
+    type: "user",
+  };
+
+  if (user.type !== "admin") {
+    redirect("/hakkimizda");
+  }
 
   return (
     <div className="p-5">

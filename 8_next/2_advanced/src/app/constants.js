@@ -57,3 +57,17 @@ export const data = [
     location: "India",
   },
 ];
+
+// API isteği atıp gelen cevabı return eden fonksiyon
+export const getRecipes = async () => {
+  // cache: no-store > nextjs'in cache özelliğini devre dışı bırakır
+  const res = await fetch("https://dummyjson.com/recipes", {
+    //  cache: "no-store",
+    next: {
+      // kullanıcnın 60 saniye boyunca yapıcağı bütün isteklerde cache'deki veriyi alıp kullanır. Ama 60 saniye dolduktan sonraki yapıcağı ilk istekte cache'deki veriyi görmezden gelr ve tekrar api isteği atıp güncel verileri alır
+      revalidate: 60,
+    },
+  });
+
+  return res.json();
+};
