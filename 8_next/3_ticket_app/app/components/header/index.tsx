@@ -14,7 +14,7 @@ const Header = () => {
         </Link>
 
         <Link
-          href="/ticket-page"
+          href="/form/new"
           className="flex items-center gap-2 hover:text-gray-400 transition"
         >
           <FaTicketAlt />
