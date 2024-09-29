@@ -1,9 +1,14 @@
 "use client";
 
+import { TicketType } from "@/app/types";
 import { useRouter } from "next/navigation";
 import { FormEvent } from "react";
 
-const Form = () => {
+type Props = {
+  editItem: TicketType | null;
+};
+
+const Form = ({ editItem }: Props) => {
   const arr = new Array(5).fill("");
   const router = useRouter();
 
@@ -16,18 +21,32 @@ const Form = () => {
     // inputlardaki veirleri bir nesneye aktar
     const ticketData = Object.fromEntries(formdata.entries());
 
-    // api'a ekleme isteği at
-    const res = await fetch("/api/tickets", {
-      method: "POST",
-      body: JSON.stringify(ticketData),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    if (editItem) {
+      // düzenlenicek eleman varsa: güncelleme isteği at
+      const res = await fetch(`/api/tickets/${editItem._id}`, {
+        method: "PUT",
+        body: JSON.stringify(ticketData),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
 
-    // istek başarısız olursa hata fırlat
-    if (!res.ok) {
-      throw new Error("Ticket oluşturulurken hata meydana geldi");
+      if (!res.ok) {
+        throw new Error("Ticket güncellenirken hata meydana geldi");
+      }
+    } else {
+      // düzenlenicek eleman yoksa: oluşturma isteği at
+      const res = await fetch("/api/tickets", {
+        method: "POST",
+        body: JSON.stringify(ticketData),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!res.ok) {
+        throw new Error("Ticket oluşturulurken hata meydana geldi");
+      }
     }
 
     // başaırlı olursa anasayafa yönlendir
@@ -46,13 +65,22 @@ const Form = () => {
         <h3>Ticket Oluştur</h3>
 
         <label>Başlık</label>
-        <input type="text" name="title" required />
+        <input
+          type="text"
+          name="title"
+          required
+          defaultValue={editItem?.title}
+        />
 
         <label>Açıklama</label>
-        <textarea name="description" required />
+        <textarea
+          name="description"
+          required
+          defaultValue={editItem?.description}
+        />
 
         <label>Kategori</label>
-        <select name="category">
+        <select name="category" defaultValue={editItem?.category}>
           <option>Yazılım Sorunu</option>
           <option>Donanım Sorunu</option>
           <option>Bağlantı Sorunu</option>
@@ -67,6 +95,7 @@ const Form = () => {
                 value={index + 1}
                 type="radio"
                 name="priority"
+                defaultChecked={editItem?.priority === index + 1}
               />
               <label htmlFor="1">{index + 1}</label>
             </>
@@ -74,16 +103,24 @@ const Form = () => {
         </div>
 
         <label>İlerleme</label>
-        <input name="progress" type="range" min={0} max={100} />
+        <input
+          name="progress"
+          type="range"
+          min={0}
+          max={100}
+          defaultValue={editItem?.progress}
+        />
 
         <label>Durum</label>
-        <select name="status" required>
+        <select name="status" required defaultValue={editItem?.status}>
           <option>Başlamadı</option>
           <option>Başladı</option>
           <option>Bitti</option>
         </select>
 
-        <button className="btn mt-5">Ticket Oluştur</button>
+        <button className="btn mt-5">
+          Ticket {editItem ? "Güncelle" : "Oluştur"}
+        </button>
       </form>
     </div>
   );
