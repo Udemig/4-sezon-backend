@@ -1,4 +1,4 @@
-import { models } from "@/app/contants";
+import { models } from "../../contants";
 import Image from "next/image";
 
 const Hero = () => {

@@ -1,6 +1,7 @@
-import Header from "@/app/components/header";
-import Hero from "../hero";
-import Brands from "@/app/components/brands";
+import Header from "../../components/header";
+import Hero from "../../components/hero";
+import Brands from "../../components/brands";
+import List from "../../components/list/index";
 
 const Home = () => {
   return (
@@ -11,7 +12,7 @@ const Home = () => {
 
       <Brands />
 
-      <h1>ARAÇA LİSTESİ</h1>
+      <List />
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import { brands } from "@/app/contants";
+import { brands } from "../../contants";
 import Container from "../container";
 import Image from "next/image";
 

@@ -1,12 +1,16 @@
 import { NextResponse as Res } from "next/server";
+import Vehicle from "../models/Vehicle";
 
 export async function GET() {
   try {
-    Res.json({
+    const vehicles = await Vehicle.find();
+
+    return Res.json({
+      vehicles,
       message: "Araç verileri alındı",
     });
   } catch (error) {
-    Res.json(
+    return Res.json(
       { message: "Araç verileri alınamadı" }, //
       { status: 500 }
     );
