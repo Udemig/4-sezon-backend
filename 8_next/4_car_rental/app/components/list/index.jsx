@@ -4,7 +4,7 @@ import Card from "../card/index";
 const getCars = async () => {
   try {
     //TODO 3001 DEĞİŞEBİLİR
-    const res = await fetch(`http://localhost:3001/api/vehicles`);
+    const res = await fetch(`http://localhost:3000/api/vehicles`);
 
     return res.json();
   } catch (err) {
