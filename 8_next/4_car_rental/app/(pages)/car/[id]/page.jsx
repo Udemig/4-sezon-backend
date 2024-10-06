@@ -8,7 +8,9 @@ import OrderBox from "../OrderBox";
 
 const getDetail = async (id) => {
   try {
-    const res = await fetch(`http://localhost:3000/api/vehicles/${id}`);
+    const res = await fetch(`http://localhost:3000/api/vehicles/${id}`, {
+      cache: "no-store",
+    });
 
     return res.json();
   } catch (err) {

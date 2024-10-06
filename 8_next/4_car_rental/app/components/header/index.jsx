@@ -11,7 +11,7 @@ const Header = ({ designs }) => {
 
         <nav className="text-sm md:text-base flex gap-2 md:gap-4">
           <Link href="/home">Keşfet</Link>
-          <Link href="/orders">Siprişlerim</Link>
+          <Link href="/orders">Siparişlerim</Link>
           <Link href="/home">Hakkımızda</Link>
           <Link href="/home" className="max-md:hidden">
             Fiyatlandırma

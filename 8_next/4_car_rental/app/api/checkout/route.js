@@ -38,6 +38,55 @@ export const POST = async (req) => {
     });
   }
 
+  //! Fiyat güncellemesini kontrol et
+  // ürünün stripe catalog'undaki fiyatına eriş
+  const stripePrice = await stripe.prices.retrieve(
+    foundProduct.default_price
+  );
+
+  // eğer stripe catalog'undaki fiyat ile api isteğiyle gelen fiyat farklıysa yeni bir fiyat oluşturup catalog verisini güncelle
+  if (stripePrice.unit_amount !== car.price) {
+    // yeni fiyat oluştur
+    const newPrice = await stripe.prices.create({
+      unit_amount: car.price * 100, // api'dan gelen fiyat
+      currency: "USD",
+      product: foundProduct.id,
+    });
+
+    // catalog'daki ürünün fiyatını güncelle
+    foundProduct = await stripe.products.update(foundProduct.id, {
+      default_price: newPrice.id,
+    });
+  }
+
+  //! Vergi oranı ekle
+  const tax_rate = await stripe.taxRates.create({
+    display_name: "KDV",
+    inclusive: false,
+    percentage: 25,
+    country: "TR",
+  });
+
+  //! Teslimat oranı ekle
+  const shippingRate = await stripe.shippingRates.create({
+    display_name: "Araç Teslimat",
+    type: "fixed_amount",
+    fixed_amount: {
+      amount: 1200 * 100,
+      currency: "usd",
+    },
+    delivery_estimate: {
+      minimum: {
+        unit: "business_day",
+        value: 7,
+      },
+      maximum: {
+        unit: "business_day",
+        value: 14,
+      },
+    },
+  });
+
   //5) ürünün stripe tarafından oluşturulan id'sini ve satın alınacak ürün miktaırnı bir nesne haline getir
   const product_info = {
     price: foundProduct.default_price,
@@ -46,7 +95,8 @@ export const POST = async (req) => {
 
   //6) ödeme oturumu (url) oluştur
   const session = await stripe.checkout.sessions.create({
-    line_items: [product_info],
+    line_items: [{ ...product_info, tax_rates: [tax_rate.id] }],
+    shipping_options: [{ shipping_rate: shippingRate.id }],
     mode: "payment",
     success_url: "http://localhost:3000" + "/success",
     cancel_url: "http://localhost:3000" + "/cancel",
@@ -55,5 +105,3 @@ export const POST = async (req) => {
   //7) satın alım url'ini client'a döndür
   return Res.json({ url: session.url });
 };
-
-// todo teslimat maliyeti
