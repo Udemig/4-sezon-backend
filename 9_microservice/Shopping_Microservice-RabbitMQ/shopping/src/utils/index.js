@@ -1,7 +1,14 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const axios = require("axios");
-const { APP_SECRET } = require("../config");
+const amqplib = require("amqplib");
+const {
+  APP_SECRET,
+  SHOPPING_BINDING_KEY,
+  QUEUE_NAME,
+  EXCHANGE_NAME,
+  MESSAGE_BROKER_URL,
+} = require("../config");
 
 //Utility functions
 module.exports.GenerateSalt = async () => {
@@ -57,4 +64,58 @@ module.exports.PublishCustomerEvents = (payload) => {
   axios.post("http://127.0.0.1:8000/customer/app-events", {
     payload,
   });
+};
+
+//-------------------- MESSAGE BROKER SETUP -----------------------------//
+
+//! kanal oluştur
+module.exports.CreateChannel = async () => {
+  try {
+    // RabbitMQ sanal sunucusu ile bağlantı kur
+    const connection = await amqplib.connect(MESSAGE_BROKER_URL);
+
+    // Sanal sunucuda bir iletişişm kanalı oluştur
+    const channel = await connection.createChannel();
+
+    // Kanala gelen mesjaları kuyruğa aktarıcak dağıtıcı ayarlıyoruz
+    channel.assertExchange(EXCHANGE_NAME, "direct", false);
+
+    // Kanalı return et
+    return channel;
+  } catch (err) {
+    throw err;
+  }
+};
+
+//! mesajlara abone ol
+module.exports.SubscribeMessage = async (channel, service) => {
+  // bir kuyruk oluştur
+  const appQueue = channel.assertQueue(QUEUE_NAME);
+
+  // kuyruğu belirli bir routing keye bağla
+  channel.bindQueue(appQueue.queue, EXCHANGE_NAME, SHOPPING_BINDING_KEY);
+
+  // kuyruktaki mesajları al / abone ol
+  channel.consume(
+    appQueue.queue,
+    (msg) => {
+      if (msg.content) {
+        console.log("💥 Kuyruktan mesaj geldi", msg.content.toString());
+        service.SubscribeEvents(JSON.parse(msg.content.toString()));
+      }
+    },
+    {
+      noAck: true, // mesaj gelince rabbitMq'ya oto  onay gönder (kuyruk temizlendisin).
+    }
+  );
+};
+
+//! mesaj yayınla
+module.exports.PublishMessage = async (channel, key, message) => {
+  try {
+    await channel.publish(EXCHANGE_NAME, key, Buffer.from(message));
+    console.log("🎾 Mesaj Kanala Gönderildi");
+  } catch (err) {
+    throw err;
+  }
 };

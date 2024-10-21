@@ -1,8 +1,12 @@
 const bcrypt = require("bcrypt");
 const axios = require("axios");
 const jwt = require("jsonwebtoken");
-
-const { APP_SECRET } = require("../config");
+const amqplib = require("amqplib");
+const {
+  APP_SECRET,
+  MESSAGE_BROKER_URL,
+  EXCHANGE_NAME,
+} = require("../config");
 
 //Utility functions
 module.exports.GenerateSalt = async () => {
@@ -54,11 +58,57 @@ module.exports.FormateData = (data) => {
 };
 
 // customer api'ına haber verir
-module.exports.PublishCustomerEvent = (payload) => {
-  axios.post("http://127.0.0.1:8000/customer/app-events", { payload });
+// module.exports.PublishCustomerEvent = (payload) => {
+//   axios.post("http://127.0.0.1:8000/customer/app-events", { payload });
+// };
+
+// // shopping api'ına haber verir
+// module.exports.PublishShoppingEvent = (payload) => {
+//   axios.post("http://127.0.0.1:8000/shopping/app-events", { payload });
+// };
+
+//-------------------- MESSAGE BROKER SETUP -----------------------------//
+
+//! kanal oluştur
+module.exports.CreateChannel = async () => {
+  try {
+    // RabbitMQ sanal sunucusu ile bağlantı kur
+    const connection = await amqplib.connect(MESSAGE_BROKER_URL);
+
+    // Sanal sunucuda bir iletişişm kanalı oluştur
+    const channel = await connection.createChannel();
+
+    // Kanala gelen mesjaları kuyruğa aktarıcak dağıtıcı ayarlıyoruz
+    channel.assertExchange(EXCHANGE_NAME, "direct", false);
+
+    // Kanalı return et
+    return channel;
+  } catch (err) {
+    throw err;
+  }
 };
 
-// shopping api'ına haber verir
-module.exports.PublishShoppingEvent = (payload) => {
-  axios.post("http://127.0.0.1:8000/shopping/app-events", { payload });
+//! mesaj yayınla
+module.exports.PublishMessage = async (channel, key, message) => {
+  try {
+    await channel.publish(EXCHANGE_NAME, key, Buffer.from(message));
+    console.log("🎾 Mesaj Kanala Gönderildi");
+  } catch (err) {
+    throw err;
+  }
 };
+
+//! mesajlara abone ol
+// module.exports.SubscribeMessage = async (channel, key) => {
+//   // bir kuyruk oluştur
+//   const appQueue = channel.assertQueue(QUEUE_NAME);
+
+//   // kuyruğu belirli bir routing keye bağla
+//   channel.bindQueue(appQueue.queue, EXCHANGE_NAME, key);
+
+//   // kuyruktaki mesajları al / abone ol
+//   channel.consume(appQueue.queue, (data) => {
+//     console.log("⚾️ Kuyruktaji veri alındı");
+//     console.log(data.content.toString());
+//   });
+// };

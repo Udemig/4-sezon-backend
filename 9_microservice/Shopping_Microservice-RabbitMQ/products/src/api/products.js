@@ -1,8 +1,12 @@
 const ProductService = require("../services/product-service");
 const UserAuth = require("./middlewares/auth");
-const { PublishCustomerEvent, PublishShoppingEvent } = require("../utils");
+const { PublishMessage } = require("../utils");
+const {
+  SHOPPING_BINDING_KEY,
+  CUSTOMER_BINDING_KEY,
+} = require("../config");
 
-module.exports = (app) => {
+module.exports = (app, channel) => {
   const service = new ProductService();
 
   app.post("/product/create", async (req, res, next) => {
@@ -70,7 +74,7 @@ module.exports = (app) => {
       );
 
       // haberi gönder
-      PublishCustomerEvent(data);
+      PublishMessage(channel, CUSTOMER_BINDING_KEY, JSON.stringify(data));
 
       return res.status(200).json(data.data);
     } catch (err) {}
@@ -89,7 +93,7 @@ module.exports = (app) => {
       );
 
       // haberi customer servisine gönder
-      PublishCustomerEvent(data);
+      PublishMessage(channel, CUSTOMER_BINDING_KEY, JSON.stringify(data));
 
       return res.status(200).json(data.data);
     } catch (err) {
@@ -109,10 +113,10 @@ module.exports = (app) => {
       );
 
       // haberi customer servisine gönder
-      PublishCustomerEvent(data);
+      PublishMessage(channel, CUSTOMER_BINDING_KEY, JSON.stringify(data));
 
       // haberi shopping servisine gönder
-      PublishShoppingEvent(data);
+      PublishMessage(channel, SHOPPING_BINDING_KEY, JSON.stringify(data));
 
       return res.status(200).json(data.data);
     } catch (err) {
@@ -132,10 +136,10 @@ module.exports = (app) => {
       );
 
       // haberi customer servisine gönder
-      PublishCustomerEvent(data);
+      PublishMessage(channel, CUSTOMER_BINDING_KEY, JSON.stringify(data));
 
       // haberi shopping servisine gönder
-      PublishShoppingEvent(data);
+      PublishMessage(channel, SHOPPING_BINDING_KEY, JSON.stringify(data));
 
       return res.status(200).json(data.data);
     } catch (err) {

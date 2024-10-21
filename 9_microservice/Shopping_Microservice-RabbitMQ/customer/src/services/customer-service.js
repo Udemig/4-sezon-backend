@@ -162,7 +162,6 @@ class CustomerService {
   }
 
   async SubscribeEvents(payload) {
-    console.log("🎾🎾payloadd", payload);
     const { event, data } = payload;
 
     const { userId, product, order, qty } = data;
